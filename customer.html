@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | StyleShop</title>
+    <link rel="stylesheet" href="customer.css">
+    <style>
+      /* Add your CSS styles below */
+      .item-image {
+          width: 50px; /* specify size as needed */
+          height: auto;
+      }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span>StyleShop</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Shop</a>
+            <a href="#" class="nav-link">Orders</a>
+            <a href="#" class="nav-link">Wishlist</a>
+            <div class="avatar">JS</div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="success-banner">
+            <div class="success-icon">✓</div>
+            <div class="success-content">
+                <h2>Thank you for your purchase!</h2>
+                <p>Your order <span class="order-number">#ORD-24598</span> has been successfully placed and is being processed.</p>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="order-summary">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Order Summary</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="order-items" id="order-items">
+                            <!-- Order items will be dynamically inserted here -->
+                        </div>
+                        <div class="order-details" id="order-details">
+                            <!-- Order details will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="shipping-payment-info">
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-header">
+                            <h3>Delivery & Payment</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="shipping-address">
+                                <h4>Shipping Address</h4>
+                                <div class="address-card">
+                                    <div class="address-name">John Smith</div>
+                                    <div class="address-line">123 Main Street, Apt 4B</div>
+                                    <div class="address-line">New York, NY 10001</div>
+                                    <div class="address-line">United States</div>
+                                    <div class="address-line">+1 (555) 123-4567</div>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-method">
+                                <h4>Payment Method</h4>
+                                <div class="payment-card">
+                                    <div class="payment-card-number">Visa ending in 4242</div>
+                                    <div class="payment-card-exp">Expires 08/2026</div>
+                                </div>
+                            </div>
+                            
+                            <div class="actions">
+                                <a href="#" class="btn btn-outline">View Order Details</a>
+                                <a href="#" class="btn btn-primary">Track Order</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="customer-profile">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Your Profile</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="profile-header">
+                            <div class="profile-avatar">JS</div>
+                            <div>
+                                <div class="profile-name">John Smith</div>
+                                <div class="profile-email">john.smith@example.com</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="total-orders">0</div> <!-- Total Orders Display -->
+                                <div class="stat-label">Total Orders</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$1,423</div>
+                                <div class="stat-label">Lifetime Purchases</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem;">
+                            <h4 style="margin-bottom: 1rem; color: var(--gray-600);">Recent Orders</h4>
+                            <div class="order-history" id="order-history">
+                                <!-- Recent orders will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <a href="#" class="btn btn-outline">View All Orders</a>
+                            <button onclick="logout()" class="btn btn-outline" style="background-color: #6256ec; color: white;">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user) {
+                window.location.href = "login.html"; // Redirect to login if user is not logged in
+            } else {
+                document.querySelector(".profile-name").textContent = user.name || "User ID: " + user.id; 
+                document.querySelector(".profile-email").textContent = user.email || "User Email"; 
+            }
+
+            // Load recent orders from local storage and display them
+            const orders = JSON.parse(localStorage.getItem("orders")) || [];
+            const orderHistoryContainer = document.getElementById("order-history");
+
+            // Display the total number of orders
+            document.getElementById("total-orders").textContent = orders.length;
+
+            // Clear existing order items (if any)
+            orderHistoryContainer.innerHTML = '';
+
+            // Loop through orders and create order history items dynamically
+            orders.forEach(order => {
+                const orderItem = document.createElement("div");
+                orderItem.classList.add("order-history-item");
+
+                const orderItemsDetails = order.items.map(item => {
+                    return `<div class="order-item">
+                        <img src="${item.image}" alt="${item.name}" class="item-image">
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">${item.price}</div>
+                            <div class="item-quantity">Qty: ${item.quantity}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                orderItem.innerHTML = `
+                    <div>
+                        <div class="order-id">${order.id}</div>
+                        <div class="order-date">${order.date}</div>
+                        <div class="order-items">${orderItemsDetails}</div>
+                    </div>
+                    <div class="order-status">
+                        <span class="badge" style="${order.status === 'Delivered' ? 'background-color: #e0e7ff; color: #4338ca;' : 'background-color: #66bb6a; color: white;'}">
+                            ${order.status}
+                        </span>
+                        <div>$${order.total}</div>
+                    </div>
+                    <button class="btn btn-danger remove-product" data-order-id="${order.id}">Remove Product</button>
+                `;
+
+                orderHistoryContainer.appendChild(orderItem);
+            });
+
+            // Load order items into the order summary
+            const orderItemsContainer = document.getElementById("order-items");
+            const latestOrder = orders.length > 0 ? orders[orders.length - 1] : null;
+
+            if (latestOrder) {
+                const orderSummaryItems = latestOrder.items.map(item => {
+                    return `<div class="order-item">
+                        <img src="${item.image}" alt="${item.name}" class="item-image">
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">${item.price}</div>
+                            <div class="item-quantity">Qty: ${item.quantity}</div>
+                        </div>
+                        <div class="item-total">$${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>`;
+                }).join('');
+
+                orderItemsContainer.innerHTML = orderSummaryItems;
+
+                const subtotal = latestOrder.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+                const tax = subtotal * 0.08;
+                const total = subtotal + tax;
+
+                document.getElementById("order-details").innerHTML = `
+                    <div class="order-detail-row">
+                        <div class="detail-label">Subtotal</div>
+                        <div class="detail-value">$${subtotal.toFixed(2)}</div>
+                    </div>
+                    <div class="order-detail-row">
+                        <div class="detail-label">Tax</div>
+                        <div class="detail-value">$${tax.toFixed(2)}</div>
+                    </div>
+                    <div class="total-row">
+                        <div>Total</div>
+                        <div>$${total.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-product').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    removeOrder(orderId);
+                });
+            });
+        });
+
+        function removeOrder(orderId) {
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            orders = orders.filter(order => order.id !== orderId);
+            localStorage.setItem("orders", JSON.stringify(orders));
+            location.reload(); // Refresh the page to show the updated orders
+        }
+
+        function logout() {
+            // Sign out the user without deleting their account
+            localStorage.removeItem("user"); // Remove user from localStorage
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    </script>
+</body>
+</html>

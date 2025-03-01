@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Shopping Experience</title>
+    <style>
+        :root {
+            --primary: #4a6fdc;
+            --primary-light: #e0e7ff;
+            --secondary: #6b21a8;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .nav-cart {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .cart-button {
+            position: relative;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--gray-600);
+            transition: color 0.2s;
+        }
+        
+        .cart-button:hover {
+            color: var(--primary);
+        }
+        
+        #cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            height: 18px;
+            width: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .product {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            aspect-ratio: 1;
+            background-color: var(--gray-100);
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .product-details {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .product-price {
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-description {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+        
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            color: var(--warning);
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3b5bba;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-600);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background-color: var(--gray-200);
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .quantity-btn:hover {
+            background-color: var(--gray-300);
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            padding: 0.25rem;
+        }
+        
+        .cart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 6rem;
+            max-height: calc(100vh - 8rem);
+            overflow-y: auto;
+        }
+        
+        .cart-empty {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--gray-400);
+        }
+        
+        .cart-items {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            background-color: var(--gray-100);
+        }
+        
+        .cart-item-details {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cart-item-price {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .cart-summary {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--gray-200);
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #0d9669;
+        }
+        
+        .checkout-btn:disabled {
+            background-color: var(--gray-300);
+            cursor: not-allowed;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(30px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            background-color: var(--success);
+        }
+        
+        .toast-danger {
+            background-color: var(--danger);
+        }
+        
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+        
+        .toast-message {
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+            
+            .products {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span>StyleShop</span>
+        </div>
+        <div class="nav-cart">
+            <button class="cart-button" id="cart-toggle">
+                🛒
+                <span id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <main>
+        <section>
+            <div class="section-title">
+                <h2>Best Sellers</h2>
+                <span class="badge badge-success">New Arrivals</span>
+            </div>
+            <div class="products" id="products-container">
+                <!-- Products will be dynamically inserted here -->
+            </div>
+        </section>
+        
+        <section class="cart-container">
+            <div class="section-title">
+                <h3>Your Cart</h3>
+            </div>
+            <div id="cart-empty" class="cart-empty">
+                <p>Your cart is empty</p>
+                <p>Start shopping to add items to your cart</p>
+            </div>
+            <ul id="cart-items" class="cart-items">
+                <!-- Cart items will be dynamically inserted here -->
+            </ul>
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span id="shipping">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <span id="tax">$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="total-price">$0.00</span>
+                </div>
+            </div>
+            <button id="checkout-btn" class="checkout-btn" disabled>Proceed to Checkout</button>
+        </section>
+    </main>
+    
+    <div id="toast" class="toast">
+        <span class="toast-icon">✓</span>
+        <span id="toast-message" class="toast-message"></span>
+    </div>
+    
+    <script>
+        // Sample products data
+        const productsData = [
+            {
+                id: 1,
+                name: "Premium Leather Jacket",
+                price: 199.99,
+                description: "Genuine leather jacket with stylish design and comfortable fit.",
+                image: "PremiumLeatherJacket.jpg",
+                rating: 4.8,
+                stock: 15
+            },
+            {
+                id: 2,
+                name: "Designer Sunglasses",
+                price: 89.95,
+                description: "UV protection sunglasses with premium frame and polarized lenses.",
+                image: "Sunglasses.jpg",
+                rating: 4.5,
+                stock: 23
+            },
+            {
+                id: 3,
+                name: "Smart Watch Pro",
+                price: 249.00,
+                description: "Advanced smartwatch with health tracking and notification features.",
+                image: "SmartPro.jpg",
+                rating: 4.9,
+                stock: 8
+            },
+            {
+                id: 4,
+                name: "Wireless Earbuds",
+                price: 129.00,
+                description: "High-quality sound with noise cancellation and long battery life.",
+                image: "Wireless.jpg",
+                rating: 4.7,
+                stock: 20
+            },
+            {
+                id: 5,
+                name: "Canvas Backpack",
+                price: 59.95,
+                description: "Durable canvas backpack with multiple compartments and laptop sleeve.",
+                image: "Canvas.jpg",
+                rating: 4.4,
+                stock: 32
+            },
+            {
+                id: 6,
+                name: "Running Shoes",
+                price: 149.99,
+                description: "Lightweight, breathable running shoes with superior cushioning.",
+                image: "Running.jpg",
+                rating: 4.6,
+                stock: 18
+            },
+            {
+    id: 7,
+    name: "Wireless Headphones",
+    price: 129.95,
+    description: "Noise-cancelling wireless headphones with 30 hours of battery life and premium sound quality.",
+    image: "Headphones.jpg",
+    rating: 4.7,
+    stock: 24
+},
+{
+    id: 8,
+    name: "Stainless Steel Water Bottle",
+    price: 34.99,
+    description: "Double-walled insulated water bottle that keeps beverages cold for 24 hours or hot for 12 hours.",
+    image: "StainlessBottle.jpg",
+    rating: 4.8,
+    stock: 45
+},
+{
+    id: 9,
+    name: "Smart Fitness Tracker",
+    price: 89.95,
+    description: "Waterproof fitness tracker with heart rate monitoring, sleep analysis, and 7-day battery life.",
+    image: "SmartTracker.jpg",
+    rating: 4.3,
+    stock: 15
+},
+{
+    id: 10,
+    name: "Portable Bluetooth Speaker",
+    price: 79.99,
+    description: "Rugged, waterproof Bluetooth speaker with 360° sound and 20 hours of playtime.",
+    image: "BluetoothSpeaker.jpg",
+    rating: 4.5,
+    stock: 29
+}
+        ];
+        
+        // Cart state
+        let cart = [];
+        const TAX_RATE = 0.08;
+        const FREE_SHIPPING_THRESHOLD = 100;
+        const SHIPPING_COST = 10.00;
+        
+        // DOM elements
+        const productsContainer = document.getElementById('products-container');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartEmptyMessage = document.getElementById('cart-empty');
+        const cartCountBadge = document.getElementById('cart-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const shippingElement = document.getElementById('shipping');
+        const taxElement = document.getElementById('tax');
+        const totalElement = document.getElementById('total-price');
+        const checkoutButton = document.getElementById('checkout-btn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        
+        // Initialize the app
+        function initApp() {
+            loadProducts();
+            loadCartFromStorage();
+            updateCartUI();
+        }
+        
+        // Load products into the DOM
+        function loadProducts() {
+            productsContainer.innerHTML = '';
+            
+            productsData.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.className = 'product';
+                productElement.dataset.id = product.id;
+                
+                const starsHTML = generateStarRating(product.rating);
+                
+                productElement.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-rating">${starsHTML} <span>(${product.rating})</span></div>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart-btn" data-id="${product.id}">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsContainer.appendChild(productElement);
+            });
+            
+            // Add event listeners to add-to-cart buttons
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    addToCart(productId);
+                });
+            });
+        }
+        
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            
+            let starsHTML = '';
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '★';
+            }
+            if (halfStar) {
+                starsHTML += '☆';
+            }
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '☆';
+            }
+            
+            return starsHTML;
+        }
+        
+        // Add a product to the cart
+        function addToCart(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+            
+            saveCartToStorage();
+            updateCartUI();
+            showToast(`${product.name} added to cart`);
+        }
+        
+        // Remove an item from the cart
+        function removeFromCart(productId) {
+            const product = productsData.find(p => p.id === productId);
+            cart = cart.filter(item => item.id !== productId);
+            saveCartToStorage();
+            updateCartUI();
+            showToast(`${product.name} removed from cart`, 'danger');
+        }
+        
+        // Update item quantity in cart
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) return;
+            
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity = newQuantity;
+                saveCartToStorage();
+                updateCartUI();
+            }
+        }
+        
+        // Update the cart UI
+        function updateCartUI() {
+            // Update cart count
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCountBadge.textContent = totalItems;
+            
+            // Show/hide empty cart message
+            if (cart.length === 0) {
+                cartEmptyMessage.style.display = 'block';
+                cartItemsContainer.style.display = 'none';
+                checkoutButton.disabled = true;
+            } else {
+                cartEmptyMessage.style.display = 'none';
+                cartItemsContainer.style.display = 'block';
+                checkoutButton.disabled = false;
+            }
+            
+            // Update cart items
+            cartItemsContainer.innerHTML = '';
+            cart.forEach(item => {
+                const cartItemElement = document.createElement('li');
+                cartItemElement.className = 'cart-item';
+                cartItemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        <div class="cart-item-actions">
+                            <div class="quantity-control">
+                                <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                                <input type="number" min="1" value="${item.quantity}" class="quantity-input" data-id="${item.id}">
+                                <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                            </div>
+                            <button class="btn btn-outline remove-btn" data-id="${item.id}">×</button>
+                        </div>
+                    </div>
+                `;
+                
+                cartItemsContainer.appendChild(cartItemElement);
+            });
+            
+            // Add event listeners to cart item buttons
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    removeFromCart(productId);
+                });
+            });
+            
+            document.querySelectorAll('.decrease-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    const item = cart.find(item => item.id === productId);
+                    if (item && item.quantity > 1) {
+                        updateQuantity(productId, item.quantity - 1);
+                    } else {
+                        removeFromCart(productId);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.increase-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.id);
+                    const item = cart.find(item => item.id === productId);
+                    if (item) {
+                        updateQuantity(productId, item.quantity + 1);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const productId = parseInt(this.dataset.id);
+                    const newQuantity = parseInt(this.value);
+                    if (newQuantity >= 1) {
+                        updateQuantity(productId, newQuantity);
+                    } else {
+                        this.value = 1;
+                        updateQuantity(productId, 1);
+                    }
+                });
+            });
+            
+            // Update cart summary
+            updateCartSummary();
+        }
+        
+        // Update cart summary calculations
+        function updateCartSummary() {
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + shipping + tax;
+            
+            subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+            shippingElement.textContent = shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`;
+            taxElement.textContent = `$${tax.toFixed(2)}`;
+            totalElement.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Save cart to local storage
+        function saveCartToStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        
+        // Load cart from local storage
+        function loadCartFromStorage() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toast.className = `toast show toast-${type}`;
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+        
+        // Handle checkout
+        document.getElementById('checkout-btn').addEventListener('click', function() {
+            if (cart.length === 0) return;
+            
+            // In a real app, this would navigate to a checkout page or open a checkout modal
+            showToast('Proceeding to checkout...');
+            
+            // For demo purposes, clear the cart after a delay
+            setTimeout(() => {
+                cart = [];
+                saveCartToStorage();
+                updateCartUI();
+                showToast('Order placed successfully!');
+                window.location.href = 'customer.html';
+            }, 1500);
+        });
+        
+        // Initialize the application
+        initApp();
+    </script>
+    
+    <script>
+        // Check if the user is logged in
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = JSON.parse(localStorage.getItem("user"));
+    
+            if (!user) {
+                // Redirect to login page if not logged in
+                window.location.href = "login.html";
+            }
+        });
+        
+        // Handle checkout
+document.getElementById('checkout-btn').addEventListener('click', function () {
+    if (cart.length === 0) return;
+    
+    // In a real app, this would navigate to a checkout page or open a checkout modal
+    showToast('Proceeding to checkout...');
+    
+    // Store orders in local storage
+    const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+    const newOrder = {
+        id: `#ORD-${Math.floor(Math.random() * 100000)}`, // Generate a random order ID
+        date: new Date().toLocaleDateString(), // Format today's date
+        items: cart, // Store the cart items
+        total: calculateTotal() // Calculate the total price
+    };
+    
+    // Add new order to the existing orders array
+    existingOrders.push(newOrder);
+    localStorage.setItem('orders', JSON.stringify(existingOrders));
+
+    // For demo purposes, clear the cart after a delay
+    setTimeout(() => {
+        cart = [];
+        saveCartToStorage();
+        updateCartUI();
+        showToast('Order placed successfully!');
+        window.location.href = 'customer.html';
+    }, 1500);
+});
+
+// Function to calculate total price
+function calculateTotal() {
+    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
+    const tax = subtotal * TAX_RATE;
+    const total = subtotal + shipping + tax;
+    return total.toFixed(2);
+}
+    </script>
+    
+</body>
+</html>

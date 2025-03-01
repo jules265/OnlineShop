@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | StyleShop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8Yp5e+0Y8bGMQPpGHD8R8Jf6dPHEE4mL1gXS" crossorigin="anonymous" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        // Initialize Firebase with the config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
+            authDomain: "usermanagr.firebaseapp.com",
+            projectId: "usermanagr",
+            storageBucket: "usermanagr.appspot.com",
+            messagingSenderId: "201891796617",
+            appId: "1:201891796617:web:ab31f6c5b0e1becb6bd858",
+            measurementId: "G-WPNMDSTYXZ"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore();
+
+        // Function to fetch users from Firestore
+        async function fetchUsers() {
+            const usersCollection = collection(db, "users");
+            const userSnapshot = await getDocs(usersCollection);
+            const usersList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            return usersList;
+        }
+
+        // Call function to fetch users
+        fetchUsers().then(users => {
+            // Display users in a table (ensure you have a table present in your Admin Panel HTML)
+            const usersTableBody = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+            users.forEach(user => {
+                let row = usersTableBody.insertRow();
+                row.insertCell(0).innerText = user.uid;
+                row.insertCell(1).innerText = user.email;
+                // Any other user info you want to display
+            });
+        }).catch(error => {
+            console.error("Error fetching users:", error);
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #6256ec;
+            color: white;
+            padding: 20px;
+            height: 100%;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #5437c2;
+        }
+
+        .container {
+            padding: 20px;
+            flex: 1; 
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #6256ec;
+            padding-bottom: 10px;
+        }
+
+        .statistics {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat {
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat h3 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #6256ec;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #5437c2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #6256ec;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+
+            .statistics {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Admin Panel</h1>
+</header>
+<div class="sidebar">
+    <h2>Navigation</h2>
+    <a href="#dashboard" onclick="navigate('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="#manage-products" onclick="navigate('manage-products')"><i class="fas fa-box"></i> Manage Products</a>
+    <a href="#view-orders" onclick="navigate('view-orders')"><i class="fas fa-shopping-cart"></i> View Orders</a>
+    <a href="#manage-users" onclick="navigate('manage-users')"><i class="fas fa-users"></i> Manage Users</a>
+</div>
+
+<div class="container" id="content">
+    <div id="dashboard" class="card">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        <div class="statistics">
+            <div class="stat">
+                <h3 id="orderCount">0</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="stat">
+                <h3 id="userCount">0</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="orderChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="userChart"></canvas>
+        </div>
+    </div>
+
+    <div id="manage-products" class="card" style="display: none;">
+        <h2><i class="fas fa-box"></i> Add New Product</h2>
+        <form id="add-product-form">
+            <input type="text" id="product-name" placeholder="Product Name" required>
+            <input type="number" id="product-price" placeholder="Product Price" required min="0">
+            <input type="text" id="product-image" placeholder="Image URL" required>
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+
+    <div id="view-orders" class="card" style="display: none;">
+        <h2><i class="fas fa-shopping-cart"></i> Customer Orders</h2>
+        <table id="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Orders will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="manage-users" class="card" style="display: none;">
+        <h2><i class="fas fa-users"></i> Manage Users</h2>
+        <form id="add-user-form">
+            <input type="text" id="user-name" placeholder="User Name" required>
+            <input type="text" id="user-email" placeholder="Email" required>
+            <button type="submit">Add User</button>
+        </form>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Users will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ordersData = JSON.parse(localStorage.getItem('orders')) || [
+        { id: 'ORD-001', customer: 'Alice Johnson', total: 150, status: 'Delivered' },
+        { id: 'ORD-002', customer: 'Bob Smith', total: 200, status: 'Processing' }
+    ];
+
+    const usersData = JSON.parse(localStorage.getItem('users')) || [
+        { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },
+        { id: 2, name: 'Bob Smith', email: 'bob@example.com' }
+    ];
+
+    // Function to update statistics
+    function updateStatistics() {
+        document.getElementById('orderCount').innerText = ordersData.length;
+        document.getElementById('userCount').innerText = usersData.length;
+
+        // Update charts
+        updateOrderChart();
+        updateUserChart();
+    }
+
+    // Function to display orders in the table
+    function displayOrders() {
+        const ordersTableBody = document.getElementById('orders-table').getElementsByTagName('tbody')[0];
+        ordersTableBody.innerHTML = ""; // Clear existing rows
+        ordersData.forEach(order => {
+            let row = ordersTableBody.insertRow();
+            row.insertCell(0).innerText = order.id;
+            row.insertCell(1).innerText = order.customer;
+            row.insertCell(2).innerText = `$${order.total.toFixed(2)}`;
+            row.insertCell(3).innerText = order.status;
+        });
+    }
+
+    // Function to display users in the table
+    function displayUsers() {
+        const usersTableBody = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+        usersTableBody.innerHTML = ""; // Clear existing rows
+        usersData.forEach(user => {
+            let row = usersTableBody.insertRow();
+            row.insertCell(0).innerText = user.id;
+            row.insertCell(1).innerText = user.name;
+            row.insertCell(2).innerText = user.email;
+        });
+    }
+
+    // Function to handle adding new products
+    document.getElementById('add-product-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const productName = document.getElementById('product-name').value;
+        const productPrice = document.getElementById('product-price').value;
+        const productImage = document.getElementById('product-image').value;
+
+        alert(`Product Added:\nName: ${productName}\nPrice: $${productPrice}\nImage URL: ${productImage}`);
+        this.reset();
+    });
+
+    // Function to handle adding new users
+    document.getElementById('add-user-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const userName = document.getElementById('user-name').value;
+        const userEmail = document.getElementById('user-email').value;
+
+        const newUser = {
+            id: usersData.length + 1,
+            name: userName,
+            email: userEmail,
+        };
+
+        usersData.push(newUser);
+        localStorage.setItem('users', JSON.stringify(usersData));
+        displayUsers();
+        updateStatistics();
+
+        this.reset();
+    });
+
+    // Navigation function
+    function navigate(section) {
+        const sections = ['dashboard', 'manage-products', 'view-orders', 'manage-users'];
+        sections.forEach(id => {
+            document.getElementById(id).style.display = id === section ? 'block' : 'none';
+        });
+        if (section === 'dashboard') {
+            updateStatistics();
+        } else if (section === 'view-orders') {
+            displayOrders();
+        } else if (section === 'manage-users') {
+            displayUsers();
+        }
+    }
+
+    // Chart.js setup
+    const orderChartCtx = document.getElementById('orderChart').getContext('2d');
+    const userChartCtx = document.getElementById('userChart').getContext('2d');
+
+    function updateOrderChart() {
+        const orderChart = new Chart(orderChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ordersData.map(o => o.id),
+                datasets: [{
+                    label: 'Order Amounts',
+                    data: ordersData.map(o => o.total),
+                    backgroundColor: 'rgba(99, 132, 255, 0.6)',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function updateUserChart() {
+        const userChart = new Chart(userChartCtx, {
+            type: 'line',
+            data: {
+                labels: usersData.map(u => u.name),
+                datasets: [{
+                    label: 'Users',
+                    data: usersData.map((_, idx) => idx + 1),
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    fill: false // Don't fill the area under the line
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Initial load
+    window.onload = function() {
+        navigate('dashboard'); // Show dashboard by default
+        updateStatistics();
+        displayOrders();
+        displayUsers();
+    };
+</script>
+</body>
+</html>

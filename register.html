@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <section class="auth">
+        <h2>Register</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="register()">Register</button>
+        <p>Already have an account? <a href="login.html">Login</a></p>
+    </section>
+    
+    <script>
+        function register() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            if (username && password) {
+                localStorage.setItem("user", JSON.stringify({ username, password }));
+                alert("Registration successful! You can now login.");
+            } else {
+                alert("Please enter both username and password.");
+            }
+        }
+    </script>
+</body>
+</html>
