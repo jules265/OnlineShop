@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | StyleShop</title>
+    <link rel="stylesheet" href="customer.css"> <!-- Link to your stylesheet -->
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span>StyleShop Order Confirmation</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="success-banner">
+            <h2>Thank you for your purchase!</h2>
+            <p>Your order <span id="orderNumber"></span> has been successfully placed and is being processed.</p>
+        </div>
+        
+        <div id="orderDetails" style="margin-top: 20px;">
+            <h3>Order Details</h3>
+            <div id="itemsList"></div>
+            <div id="deliveryInfo"></div>
+            <div id="totalAmount"></div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const orders = JSON.parse(localStorage.getItem("orders")) || {};
+            const latestOrder = orders[user.id] ? orders[user.id][orders[user.id].length - 1] : null; // Get the last order
+
+            if (latestOrder) {
+                document.getElementById("orderNumber").textContent = latestOrder.id;
+
+                const itemsList = document.getElementById("itemsList");
+                latestOrder.items.forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.innerHTML = `${item.name} - $${item.price} × ${item.quantity}`;
+                    itemsList.appendChild(itemDiv);
+                });
+
+                // Display delivery information
+                const deliveryInfo = `
+                    <h4>Delivery Details:</h4>
+                    <p>Name: ${latestOrder.deliveryDetails.name}</p>
+                    <p>Address: ${latestOrder.deliveryDetails.address}</p>
+                    <p>City: ${latestOrder.deliveryDetails.city}</p>
+                    <p>ZIP Code: ${latestOrder.deliveryDetails.zip}</p>
+                `;
+                document.getElementById("deliveryInfo").innerHTML = deliveryInfo;
+
+                document.getElementById("totalAmount").textContent = "Total: $" + latestOrder.total;
+            } else {
+                window.location.href = "customer.html"; // Redirect if there's no order
+            }
+        });
+    </script>
+</body>
+</html>

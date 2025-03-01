@@ -13,7 +13,7 @@
             <span>StyleShop</span>
         </div>
         <nav>
-        
+            <!-- Navigation links can go here -->
         </nav>
         <div class="nav-cart">
             <a href="customer.html" style="text-decoration: none; color: rgb(255, 255, 255); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; padding: 6px;background-color: rgb(65, 65, 197); border-radius: 5px;">Profile</a>
@@ -130,6 +130,7 @@
                 rating: 4.6,
                 stock: 18
             },
+            // Add more products here...
             {
     id: 7,
     name: "Wireless Headphones",
@@ -207,14 +208,14 @@
         // Load products into the DOM
         function loadProducts() {
             productsContainer.innerHTML = '';
-            
+
             productsData.forEach(product => {
                 const productElement = document.createElement('div');
                 productElement.className = 'product';
                 productElement.dataset.id = product.id;
-                
+
                 const starsHTML = generateStarRating(product.rating);
-                
+
                 productElement.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="product-image">
                     <div class="product-details">
@@ -229,10 +230,10 @@
                         </div>
                     </div>
                 `;
-                
+
                 productsContainer.appendChild(productElement);
             });
-            
+
             // Add event listeners to add-to-cart buttons
             document.querySelectorAll('.add-to-cart-btn').forEach(button => {
                 button.addEventListener('click', function() {
@@ -241,13 +242,13 @@
                 });
             });
         }
-        
+
         // Generate star rating HTML
         function generateStarRating(rating) {
             const fullStars = Math.floor(rating);
             const halfStar = rating % 1 >= 0.5;
             const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-            
+
             let starsHTML = '';
             for (let i = 0; i < fullStars; i++) {
                 starsHTML += '★';
@@ -258,17 +259,17 @@
             for (let i = 0; i < emptyStars; i++) {
                 starsHTML += '☆';
             }
-            
+
             return starsHTML;
         }
-        
+
         // Add a product to the cart
         function addToCart(productId) {
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
-            
+
             const existingItem = cart.find(item => item.id === productId);
-            
+
             if (existingItem) {
                 existingItem.quantity++;
             } else {
@@ -285,34 +286,13 @@
             updateCartUI();
             showToast(`${product.name} added to cart`);
         }
-        
-        // Remove an item from the cart
-        function removeFromCart(productId) {
-            const product = productsData.find(p => p.id === productId);
-            cart = cart.filter(item => item.id !== productId);
-            saveCartToStorage();
-            updateCartUI();
-            showToast(`${product.name} removed from cart`, 'danger');
-        }
-        
-        // Update item quantity in cart
-        function updateQuantity(productId, newQuantity) {
-            if (newQuantity < 1) return;
-            
-            const cartItem = cart.find(item => item.id === productId);
-            if (cartItem) {
-                cartItem.quantity = newQuantity;
-                saveCartToStorage();
-                updateCartUI();
-            }
-        }
-        
+
         // Update the cart UI
         function updateCartUI() {
             // Update cart count
             const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
             cartCountBadge.textContent = totalItems;
-            
+
             // Show/hide empty cart message
             if (cart.length === 0) {
                 cartEmptyMessage.style.display = 'block';
@@ -323,7 +303,7 @@
                 cartItemsContainer.style.display = 'block';
                 checkoutButton.disabled = false;
             }
-            
+
             // Update cart items
             cartItemsContainer.innerHTML = '';
             cart.forEach(item => {
@@ -347,7 +327,7 @@
                 
                 cartItemsContainer.appendChild(cartItemElement);
             });
-            
+
             // Add event listeners to cart item buttons
             document.querySelectorAll('.remove-btn').forEach(button => {
                 button.addEventListener('click', function() {
@@ -355,7 +335,7 @@
                     removeFromCart(productId);
                 });
             });
-            
+
             document.querySelectorAll('.decrease-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const productId = parseInt(this.dataset.id);
@@ -367,7 +347,7 @@
                     }
                 });
             });
-            
+
             document.querySelectorAll('.increase-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const productId = parseInt(this.dataset.id);
@@ -377,7 +357,7 @@
                     }
                 });
             });
-            
+
             document.querySelectorAll('.quantity-input').forEach(input => {
                 input.addEventListener('change', function() {
                     const productId = parseInt(this.dataset.id);
@@ -390,29 +370,29 @@
                     }
                 });
             });
-            
+
             // Update cart summary
             updateCartSummary();
         }
-        
+
         // Update cart summary calculations
         function updateCartSummary() {
             const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
             const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
             const tax = subtotal * TAX_RATE;
             const total = subtotal + shipping + tax;
-            
+
             subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
             shippingElement.textContent = shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`;
             taxElement.textContent = `$${tax.toFixed(2)}`;
             totalElement.textContent = `$${total.toFixed(2)}`;
         }
-        
+
         // Save cart to local storage
         function saveCartToStorage() {
             localStorage.setItem('cart', JSON.stringify(cart));
         }
-        
+
         // Load cart from local storage
         function loadCartFromStorage() {
             const savedCart = localStorage.getItem('cart');
@@ -420,106 +400,87 @@
                 cart = JSON.parse(savedCart);
             }
         }
-        
+
         // Show toast notification
         function showToast(message, type = 'success') {
             toastMessage.textContent = message;
             toast.className = `toast show toast-${type}`;
-            
+
             setTimeout(() => {
                 toast.className = 'toast';
             }, 3000);
         }
-        
-        // Handle checkout
+
+        // Place Order Function
+        function placeOrder(order) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            let orders = JSON.parse(localStorage.getItem("orders")) || {};
+
+            // Initialize orders array for the user if it doesn't exist
+            if (!orders[user.id]) {
+                orders[user.id] = [];
+            }
+
+            // Add the new order to the user's order array
+            orders[user.id].push(order);
+
+            // Save updated orders to local storage
+            localStorage.setItem("orders", JSON.stringify(orders));
+        }
+
+        // Handle checkout process
         document.getElementById('checkout-btn').addEventListener('click', function() {
-            if (cart.length === 0) return;
-            
-            // In a real app, this would navigate to a checkout page or open a checkout modal
+            if (cart.length === 0) return; // Prevent checkout if cart is empty
+
             showToast('Proceeding to checkout...');
-            
-            // For demo purposes, clear the cart after a delay
+
+            // Prepare the order data
+            const newOrder = {
+                id: `ORD-${Math.floor(Math.random() * 100000)}`, // Generate a random order ID
+                date: new Date().toLocaleDateString(), // Store order date
+                items: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                })), // Store cart items
+                total: calculateTotal() // Calculate total price
+            };
+
+            // Call the function to save the order
+            placeOrder(newOrder);
+
+            // Clear the cart after placing the order
             setTimeout(() => {
                 cart = [];
                 saveCartToStorage();
                 updateCartUI();
                 showToast('Order placed successfully!');
-                window.location.href = 'customer.html';
+                window.location.href = 'customer.html'; // Redirect to the customer page
             }, 1500);
         });
-        
+
+        // Function to calculate the total price
+        function calculateTotal() {
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
+            const tax = subtotal * TAX_RATE;
+            const total = subtotal + shipping + tax;
+            return total.toFixed(2);
+        }
+
+        // Check if the user is logged in
+        document.addEventListener('DOMContentLoaded', function () {
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (!user) {
+                // Redirect to login page if not logged in
+                window.location.href = 'login.html';
+            }
+        });
+
         // Initialize the application
         initApp();
     </script>
-    
-    <script>
-        // Check if the user is logged in
-        document.addEventListener("DOMContentLoaded", function () {
-            const user = JSON.parse(localStorage.getItem("user"));
-    
-            if (!user) {
-                // Redirect to login page if not logged in
-                window.location.href = "login.html";
-            }
-        });
-        
-        // Handle checkout
-document.getElementById('checkout-btn').addEventListener('click', function () {
-    if (cart.length === 0) return;
-    
-    // In a real app, this would navigate to a checkout page or open a checkout modal
-    showToast('Proceeding to checkout...');
-    
-    // Store orders in local storage
-    const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
-    
-    const newOrder = {
-        id: `#ORD-${Math.floor(Math.random() * 100000)}`, // Generate a random order ID
-        date: new Date().toLocaleDateString(), // Format today's date
-        items: cart, // Store the cart items
-        total: calculateTotal() // Calculate the total price
-    };
-    
-    // Add new order to the existing orders array
-    existingOrders.push(newOrder);
-    localStorage.setItem('orders', JSON.stringify(existingOrders));
-
-    // For demo purposes, clear the cart after a delay
-    setTimeout(() => {
-        cart = [];
-        saveCartToStorage();
-        updateCartUI();
-        showToast('Order placed successfully!');
-        window.location.href = 'customer.html';
-    }, 1500);
-});
-
-// Function to calculate total price
-function calculateTotal() {
-    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
-    const tax = subtotal * TAX_RATE;
-    const total = subtotal + shipping + tax;
-    return total.toFixed(2);
-}
-
-
-function placeOrder(order) {
-    const user = JSON.parse(localStorage.getItem("user"));
-    let orders = JSON.parse(localStorage.getItem("orders")) || {};
-    
-    // If there are no orders for this user yet, initialize as an empty array
-    if (!orders[user.id]) {
-        orders[user.id] = [];
-    }
-    
-    // Push the new order to the user's orders
-    orders[user.id].push(order);
-    
-    // Save the updated orders back to local storage
-    localStorage.setItem("orders", JSON.stringify(orders));
-}
-    </script>
-    
 </body>
 </html>

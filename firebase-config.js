@@ -7,12 +7,13 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-s
 // Your web app's Firebase configuration
 // Replace these values with your actual Firebase project configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
+  authDomain: "usermanagr.firebaseapp.com",
+  projectId: "usermanagr",
+  storageBucket: "usermanagr.appspot.com",
+  messagingSenderId: "201891796617",
+  appId: "1:201891796617:web:ab31f6c5b0e1becb6bd858",
+  measurementId: "G-WPNMDSTYXZ"
 };
 
 // Initialize Firebase
@@ -20,5 +21,4 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-
 export { app, auth, db, storage };

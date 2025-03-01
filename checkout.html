@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | StyleShop</title>
+    <link rel="stylesheet" href="customer.css"> <!-- Link to your stylesheet -->
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span>StyleShop Checkout</span>
+        </div>
+    </header>
+
+    <main>
+        <h1>Checkout</h1>
+        <div class="checkout-summary">
+            <h2>Your Order</h2>
+            <div id="orderItems"></div>
+            <div class="order-total">
+                Total: $<span id="orderTotal">0.00</span>
+            </div>
+        </div>
+
+        <h2>Delivery Details</h2>
+        <form id="deliveryForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            <label for="address">Address:</label>
+            <input type="text" id="address" required>
+            <label for="city">City:</label>
+            <input type="text" id="city" required>
+            <label for="zip">ZIP Code:</label>
+            <input type="text" id="zip" required>
+            <button type="button" id="confirmOrderButton">Confirm Order</button>
+        </form>
+    </main>
+
+    <script>
+        // Function to save the order in local storage
+        function placeOrder(order) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            let orders = JSON.parse(localStorage.getItem("orders")) || {};
+            
+            if (!orders[user.id]) {
+                orders[user.id] = [];
+            }
+            
+            orders[user.id].push(order);
+            localStorage.setItem("orders", JSON.stringify(orders));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Retrieve cart items from local storage
+            const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+            const orderItemsContainer = document.getElementById("orderItems");
+            const orderTotalElement = document.getElementById("orderTotal");
+            let total = 0;
+
+            if (cartItems.length === 0) {
+                orderItemsContainer.innerHTML = '<p>Your cart is empty. Please add items to your cart.</p>';
+                return; // Exit if no items are in the cart
+            }
+
+            cartItems.forEach(item => {
+                total += item.price * item.quantity;
+                const itemDiv = document.createElement("div");
+                itemDiv.innerHTML = `${item.name} - $${item.price.toFixed(2)} × ${item.quantity}`;
+                orderItemsContainer.appendChild(itemDiv);
+            });
+
+            orderTotalElement.textContent = total.toFixed(2);
+
+            document.getElementById("confirmOrderButton").addEventListener("click", function() {
+                const order = {
+                    id: "ORD-" + Date.now(),
+                    items: cartItems,
+                    status: "Processing",
+                    date: new Date().toISOString(),
+                    total: total.toFixed(2), // Set total as a string for easier display
+                    deliveryDetails: {
+                        name: document.getElementById("name").value,
+                        address: document.getElementById("address").value,
+                        city: document.getElementById("city").value,
+                        zip: document.getElementById("zip").value,
+                    }
+                };
+
+                // Call the placeOrder function to save the order
+                placeOrder(order);
+
+                // Redirect to order confirmation page
+                window.location.href = "order-confirmation.html"; 
+            });
+        });
+    </script>
+</body>
+</html>

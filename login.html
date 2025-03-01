@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Developer Portal</title>
     <link rel="stylesheet" href="login.css">
-    <script type="module" src="orderservice.js"></script>
-    <script type="module" src="authservice.js"></script>
+    <!-- <script type="module" src="orderservice.js"></script>
+    <script type="module" src="authservice.js"></script> -->
     <script type="module" src="firebaseauth.js"></script>
 </head>
 <body>
@@ -114,12 +114,66 @@
     </div>
 
     <script>
-        // Simulated database of existing user accounts
-        const userDatabase = [
-            { id: "user1", email: "user1@example.com", lastLogin: "2025-02-25T12:34:56Z" },
-            { id: "user2", email: "user2@example.com", lastLogin: "2025-02-27T09:18:27Z" },
-            { id: "admin", email: "admin@example.com", lastLogin: "2025-02-28T00:12:00Z" }
-        ];
+// Simulated database of existing user accounts
+const userDatabase = [
+    { id: "user1", email: "user1@example.com", lastLogin: "2025-02-25T12:34:56Z" },
+    { id: "user2", email: "user2@example.com", lastLogin: "2025-02-27T09:18:27Z" },
+    { id: "Admin", email: "admin@example.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "Jules", email: "nzizajules202@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "ndishimyekay", email: "ndishimyeemilien@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "yasinimyy", email: "yasinimyy27@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "Dolla", email: "uwimpuhwedorcas@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "ellencody", email: "ellencody@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "anitha", email: "uwiringiyimanaanitha@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "cynthia", email: "cynthia@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "prince", email: "k1ngprince@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "fidele", email: "fidele@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "shema", email: "shemapatrick147@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "aline", email: "umutoniwase@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "djuma", email: "assoumandjuma@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "fabrice", email: "fabriceishimwe@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "pazzo", email: "patrick@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "ipviper", email: "ipviper@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "agape", email: "agape@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "reponse", email: "reponse@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "elijah", email: "elijah@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "mukunzi", email: "mukunzi@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "nora", email: "kamikazinora@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "Papa", email: "joelgas@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "Beatha", email: "Uwanyirigirabeatha@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "japheth", email: "japhet@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "kevine", email: "uwasekevine@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+    { id: "augustin", email: "augstin@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
+];
+
+// Function to register a new user
+function registerUser(id, email) {
+    // Check if user ID or email already exists in the database
+    const userExists = userDatabase.some(user => user.id === id || user.email === email);
+    
+    if (userExists) {
+        console.error("Error: User ID or Email already exists.");
+        return;
+    }
+    
+    // Create a new user object
+    const newUser = {
+        id: id,
+        email: email,
+        lastLogin: new Date().toISOString() // Set lastLogin to the current date and time
+    };
+    
+    // Add new user to the database
+    userDatabase.push(newUser);
+    console.log("User registered successfully:", newUser);
+}
+
+// Example usage
+registerUser("newUser", "newUser@example.com");
+console.log(userDatabase);
+
+// You can test registering a duplicate user
+registerUser("newUser", "anotherEmail@example.com");
 
         function showToast(type, title, message) {
             const toast = document.getElementById("toast");
@@ -187,8 +241,8 @@
                     
                     // Redirect after a brief delay
                     setTimeout(() => {
-                        window.location.href = "index.html";
-                    }, 1000);
+                        window.location.href = "customer.html";
+                    }, 2500);
                 } else {
                     // User does not exist
                     loginButton.classList.remove("loading");
