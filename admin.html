@@ -1104,7 +1104,8 @@
                     <td><span class="status status-${request.status.toLowerCase()}">${request.status}</span></td>
                     <td>
                         <button class="action-btn" onclick="viewJobRequest('${request.email}')">View</button>
-                        <button class="action-btn" onclick="updateJobRequestStatus('${request.email}')">Update</button>
+                        <button class="action-btn" style="background-color: #4caf50; color: white;" onclick="acceptJobRequest('${request.email}')">Accept</button>
+                        <button class="action-btn" style="background-color: #f44336; color: white;" onclick="rejectJobRequest('${request.email}')">Reject</button>
                     </td>
                 </tr>
             `).join('');
@@ -1163,7 +1164,94 @@
             }
         }
 
-        // Update job request status
+        // Accept job request
+        function acceptJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                
+                // Ask for a message for the applicant
+                const responseMessage = prompt(`Enter a message for the applicant:`, 
+                    'Congratulations! Your job application has been accepted. Please contact us to discuss next steps.');
+                
+                if (responseMessage !== null) {
+                    // Update job request status and message
+                    jobRequests[requestIndex].status = 'Accepted';
+                    jobRequests[requestIndex].responseMessage = responseMessage;
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: 'Your job application has been ACCEPTED!',
+                        message: responseMessage,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    
+                    // Reload job requests
+                    loadJobRequests();
+                    alert(`Job application for ${request.fullName} has been accepted.`);
+                }
+            }
+        }
+
+        // Reject job request
+        function rejectJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                
+                // Confirm rejection
+                if (!confirm(`Are you sure you want to reject ${request.fullName}'s application?`)) {
+                    return;
+                }
+                
+                // Ask for a message for the applicant
+                const responseMessage = prompt(`Enter a message for the applicant:`, 
+                    'Thank you for your interest. Unfortunately, your application was not selected at this time.');
+                
+                if (responseMessage !== null) {
+                    // Update job request status and message
+                    jobRequests[requestIndex].status = 'Rejected';
+                    jobRequests[requestIndex].responseMessage = responseMessage;
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: 'Status Update on Your Job Application',
+                        message: responseMessage,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    
+                    // Reload job requests
+                    loadJobRequests();
+                    alert(`Job application for ${request.fullName} has been rejected.`);
+                }
+            }
+        }
+        
+        // Update job request status (keeping for compatibility)
         function updateJobRequestStatus(email) {
             const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
             const requestIndex = jobRequests.findIndex(r => r.email === email);

@@ -334,6 +334,37 @@
             background-color: #f0f7ff;
             border-left: 3px solid #4a4af4;
         }
+        
+        .job-accepted {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 3px solid #4caf50;
+            animation: pulse-green 2s;
+        }
+        
+        .job-rejected {
+            background-color: rgba(244, 67, 54, 0.05);
+            border-left: 3px solid #f44336;
+        }
+        
+        @keyframes pulse-green {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+        
+        .notification-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .notification-card:hover .notification-icon {
+            transform: scale(1.1);
+        }
 
         .job-request {
             border: 1px solid #eee;
@@ -688,15 +719,35 @@
             userNotifications.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             // Display notifications
-            notificationsContainer.innerHTML = userNotifications.map(notification => `
-                <div class="notification-card ${!notification.read ? 'notification-unread' : ''}" onclick="viewNotification('${notification.id}')">
+            notificationsContainer.innerHTML = userNotifications.map(notification => {
+                let notificationClass = !notification.read ? 'notification-unread' : '';
+                let iconHtml = '';
+                
+                // Add special styling based on notification type
+                if (notification.type === 'job_response') {
+                    if (notification.title.includes('ACCEPTED')) {
+                        notificationClass += ' job-accepted';
+                        iconHtml = '<div class="notification-icon" style="background-color: #4caf50; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">✓</div>';
+                    } else if (notification.title.includes('Status Update')) {
+                        notificationClass += ' job-rejected';
+                        iconHtml = '<div class="notification-icon" style="background-color: #f44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">✕</div>';
+                    }
+                }
+                
+                return `
+                <div class="notification-card ${notificationClass}" onclick="viewNotification('${notification.id}')">
                     <div class="notification-header">
-                        <div class="notification-title">${notification.title}</div>
+                        <div style="display: flex; align-items: center;">
+                            ${iconHtml}
+                            <div class="notification-title">${notification.title}</div>
+                        </div>
                         <div class="notification-date">${new Date(notification.date).toLocaleDateString()}</div>
                     </div>
                     <div class="notification-message">${notification.message}</div>
+                    ${notification.jobType ? `<div class="notification-footer" style="margin-top: 8px; font-size: 0.8rem; color: #666;">Related to: ${notification.jobType} position</div>` : ''}
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // View notification and mark as read
