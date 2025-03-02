@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+
 // Your Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
@@ -16,9 +17,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore();
-
 // Create account function
 function createAccount() {
     const newUserId = document.getElementById("newUserId").value.trim();

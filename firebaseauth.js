@@ -1,6 +1,6 @@
 // Import necessary Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 // Your Firebase configuration
@@ -16,16 +16,21 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore();
+auth.languageCode = 'en'
+const provider = new GoogleAuthProvider();
 
 // Create account function
 function createAccount() {
     const newUserId = document.getElementById("newUserId").value.trim();
     const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
     const createButton = document.getElementById("createAccountButton");
 
-    if (!newUserId || !email) {
+    // Validate input
+    if (!newUserId || !email || !phone || !address) {
         showToast("warning", "Incomplete Information", "Please fill in all fields");
         return;
     }
@@ -39,11 +44,13 @@ function createAccount() {
         .then(async (userCredential) => {
             const user = userCredential.user;
 
-            // Save additional user info in Firestore
-            await setDoc(doc(db, "users", user.uid), {
+            // Save additional user info in Firestore, including phone and address
+            await setDoc(doc(db, "users", user.uid), {  
                 uid: user.uid,
                 email: email,
                 userId: newUserId,
+                phone: phone,        
+                address: address,    
                 lastLogin: new Date().toISOString(),
             });
 
@@ -86,10 +93,10 @@ function login() {
     loginButton.classList.add("loading");
     loginButton.disabled = true;
 
-    const email = userId; // Assuming userId is also used as email for login
+    const email = userId; 
 
     // Sign in the user
-    signInWithEmailAndPassword(auth, email, userId) // Here you can customize the login logic if needed
+    signInWithEmailAndPassword(auth, email, userId) 
         .then((userCredential) => {
             // User successfully logged in
             const user = userCredential.user;
@@ -117,6 +124,42 @@ function login() {
         });
 }
 
+// Login with Google function
+function loginWithGoogle() {
+    const googleLoginButton = document.getElementById("loginButtonWithGoogle");
+
+    // Display loading state
+    googleLoginButton.classList.add("loading");
+    googleLoginButton.disabled = true;
+
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            // Store user data in local storage
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const user = result.user;
+
+            localStorage.setItem("user", JSON.stringify({
+                id: user.uid,
+                email: user.email,
+                lastLogin: new Date().toISOString(),
+            }));
+
+            // Redirect after a brief delay
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1000);
+        })
+        .catch((error) => {
+            googleLoginButton.classList.remove("loading");
+            googleLoginButton.disabled = false;
+            showToast("error", "Google Login Failed", error.message);
+        });
+}
+
 // Add event listeners
 document.getElementById("createAccountButton").addEventListener("click", createAccount);
 document.getElementById("loginButton").addEventListener("click", login);
+
+// Change the id of the Google login button to "loginButtonWithGoogle"
+document.getElementById("loginButtonWithGoogle").addEventListener("click", loginWithGoogle);
