@@ -289,29 +289,24 @@
             }, 3000);
         }
 
-        let auth, db;
+        let auth, db, currentUser = null;
+        let isAdmin = false;
 
         // Initialize Firebase
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                if (window.firebase) {
-                    firebase.initializeApp(firebaseConfig);
-                    auth = firebase.auth();
-                    db = firebase.firestore();
-                    
-                    // Check auth state
-                    auth.onAuthStateChanged(handleAuthStateChange);
-                    
-                    // Welcome toast
-                    showToast("Welcome to your order history!", "info");
-                } else {
-                    console.error("Firebase is not loaded. Using local storage only.");
-                    showToast("Operating in offline mode.", "info");
-                    loadOrdersFromLocalStorage();
-                }
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // Check auth state
+                auth.onAuthStateChanged(handleAuthStateChange);
+                
+                // Welcome toast
+                showToast("Welcome to your order history!", "info");
             } catch (e) {
                 console.error("Firebase initialization error:", e);
-                showToast("Error initializing application.", "error");
+                showToast("Error initializing Firebase. Using local storage.", "error");
                 loadOrdersFromLocalStorage();
             }
         });
@@ -319,35 +314,60 @@
         // Handle auth state changes
         function handleAuthStateChange(user) {
             if (user) {
+                currentUser = user;
                 // Update profile information
                 document.getElementById("user-name").textContent = user.displayName || "User";
                 document.getElementById("user-email").textContent = user.email;
                 
-                // Try to load orders from Firestore
-                if (db) {
-                    loadOrdersFromFirestore(user.uid);
-                } else {
-                    loadOrdersFromLocalStorage();
-                }
+                // Check if user is admin
+                db.collection('users').doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists && doc.data().role === 'admin') {
+                            isAdmin = true;
+                            showToast("Admin account detected. All orders are visible.", "info");
+                        }
+                        
+                        // Load orders after role check
+                        loadOrdersFromFirestore(user.uid);
+                    })
+                    .catch((error) => {
+                        console.error("Error checking admin status:", error);
+                        // Still load orders if admin check fails
+                        loadOrdersFromFirestore(user.uid);
+                    });
             } else {
-                // For demo purposes, still show orders from localStorage
-                // In production, you might redirect to login
-                // window.location.href = "login.html";
-                loadOrdersFromLocalStorage();
+                // Redirect to login page when not authenticated
+                showToast("Please log in to view your orders", "info");
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 2000);
             }
         }
 
         // Load orders from Firestore
         function loadOrdersFromFirestore(userId) {
-            db.collection('orders')
-                .where('userId', '==', userId)
-                .orderBy('orderDate', 'desc')
-                .get()
+            let query;
+            
+            if (isAdmin) {
+                // Admin sees all orders
+                query = db.collection('orders')
+                    .orderBy('orderDate', 'desc');
+                    
+                showToast("Admin view: Showing all customer orders", "info");
+            } else {
+                // Regular customers only see their own orders
+                query = db.collection('orders')
+                    .where('userId', '==', userId)
+                    .orderBy('orderDate', 'desc');
+            }
+            
+            query.get()
                 .then((snapshot) => {
                     const ordersContainer = document.getElementById('orders-container');
                     
                     if (snapshot.empty) {
                         // No Firestore orders, try localStorage
+                        ordersContainer.innerHTML = '<p>No orders found. Start shopping!</p>';
                         loadOrdersFromLocalStorage();
                         return;
                     }
@@ -357,7 +377,12 @@
                         const order = doc.data();
                         const date = order.orderDate instanceof Date ? 
                             order.orderDate : 
-                            new Date(order.orderDate.seconds * 1000);
+                            new Date(order.orderDate?.seconds ? order.orderDate.seconds * 1000 : Date.now());
+                        
+                        // For admins, show customer name
+                        const customerInfo = isAdmin ? 
+                            `<p>Customer: ${order.customerName || order.customer?.name || 'Unknown'}</p>
+                             <p>Email: ${order.customerEmail || order.customer?.email || 'Unknown'}</p>` : '';
                         
                         ordersHTML += `
                             <div class="order-card">
@@ -365,17 +390,30 @@
                                     <h3>Order #${order.orderNumber || doc.id.substring(0, 8)}</h3>
                                     <p>Date: ${date.toLocaleDateString()}</p>
                                     <p>Status: ${order.status || 'Completed'}</p>
+                                    ${customerInfo}
+                                </div>
+                                <div class="order-items">
+                                    ${(order.items || []).map(item => `
+                                        <div class="order-item">
+                                            <img src="${item.image || 'https://placehold.co/100x100?text=Product'}" alt="${item.name}" class="item-image">
+                                            <div>
+                                                <div>${item.name}</div>
+                                                <div>Quantity: ${item.quantity}</div>
+                                                <div>$${item.price.toFixed(2)}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
                                 </div>
                                 <div class="order-total">
-                                    Total: $${(order.totalAmount || 0).toFixed(2)}
+                                    Total: $${(order.totalAmount || order.total || 0).toFixed(2)}
                                 </div>
-                                <a href="profile.html" class="view-details-btn">View Details</a>
+                                <a href="profile.html?orderId=${doc.id}" class="view-details-btn">View Details</a>
                             </div>
                         `;
                     });
                     
                     ordersContainer.innerHTML = ordersHTML;
-                    showToast(`Found ${snapshot.size} order(s) in your account`, "success");
+                    showToast(`Found ${snapshot.size} order(s)`, "success");
                 })
                 .catch((error) => {
                     console.error("Error getting Firestore orders: ", error);
@@ -394,7 +432,7 @@
                 return;
             }
 
-            const orders = JSON.parse(storedOrders);
+            let orders = JSON.parse(storedOrders);
             
             if (orders.length === 0) {
                 ordersContainer.innerHTML = '<p>No orders found</p>';
@@ -402,8 +440,30 @@
                 return;
             }
             
+            // Filter orders by user email if not admin and user is logged in
+            if (!isAdmin && currentUser) {
+                const userEmail = currentUser.email;
+                orders = orders.filter(order => 
+                    order.customer?.email === userEmail || 
+                    order.customerEmail === userEmail ||
+                    order.userId === currentUser.uid
+                );
+                
+                if (orders.length === 0) {
+                    ordersContainer.innerHTML = '<p>No orders found for your account</p>';
+                    showToast("You haven't placed any orders yet.", "info");
+                    return;
+                }
+            }
+            
             // Sort orders by date (newest first)
             orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // For admins, show customer info
+            const customerInfoDisplay = isAdmin ? 
+                order => `<div>Customer: <strong>${order.customer?.name || 'N/A'}</strong></div>
+                          <div>Email: <strong>${order.customer?.email || 'N/A'}</strong></div>` :
+                () => '';
             
             ordersContainer.innerHTML = orders.map(order => {
                 // Format date
@@ -427,6 +487,7 @@
                             <div>Status: <strong>${order.status}</strong></div>
                             <div>Items: <strong>${order.items.reduce((total, item) => total + item.quantity, 0)}</strong></div>
                             <div>Shipping to: <strong>${order.customer?.name || 'N/A'}</strong></div>
+                            ${customerInfoDisplay(order)}
                             <div>
                                 Payment: 
                                 <span class="order-payment">${order.paymentMethod || 'Credit Card'}</span>
@@ -488,43 +549,4 @@
 </html>
 
 
-    <script>
-        // For testing purposes only - adds demo order data if none exists
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!localStorage.getItem("orders")) {
-                fetch('orders.json')
-                    .then(response => response.json())
-                    .then(data => {
-                        localStorage.setItem("orders", JSON.stringify(data));
-                    })
-                    .catch(error => {
-                        console.error("Could not load sample data:", error);
-                        // If fetch fails, create a sample order manually
-                        const sampleOrder = [{
-                            id: "ORD-" + Math.floor(Math.random() * 100000),
-                            date: new Date().toISOString(),
-                            status: "Processing",
-                            items: [
-                                {
-                                    id: "p1",
-                                    name: "Sample Product",
-                                    price: 29.99,
-                                    quantity: 1,
-                                    image: "https://placehold.co/100x100?text=Product"
-                                }
-                            ],
-                            customer: {
-                                name: "Demo User",
-                                email: "user@example.com"
-                            },
-                            subtotal: 29.99,
-                            tax: 2.40,
-                            shipping: 5.00,
-                            total: 37.39,
-                            paymentMethod: "Credit Card"
-                        }];
-                        localStorage.setItem("orders", JSON.stringify(sampleOrder));
-                    });
-            }
-        });
-    </script>
+    
