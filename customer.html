@@ -316,6 +316,49 @@
                 window.location.href = "login.html";
                 return;
             }
+            
+            // Load orders from Firestore
+            db.collection('orders')
+                .where('userId', '==', user.uid)
+                .orderBy('orderDate', 'desc')
+                .get()
+                .then((snapshot) => {
+                    const ordersContainer = document.getElementById('orders-container');
+                    
+                    if (snapshot.empty) {
+                        ordersContainer.innerHTML = '<p>You have no orders yet. Start shopping!</p>';
+                        return;
+                    }
+                    
+                    let ordersHTML = '';
+                    snapshot.forEach((doc) => {
+                        const order = doc.data();
+                        const date = order.orderDate instanceof Date ? 
+                            order.orderDate : 
+                            new Date(order.orderDate.seconds * 1000);
+                        
+                        ordersHTML += `
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <h3>Order #${order.orderNumber || doc.id.substring(0, 8)}</h3>
+                                    <p>Date: ${date.toLocaleDateString()}</p>
+                                    <p>Status: ${order.status || 'Completed'}</p>
+                                </div>
+                                <div class="order-total">
+                                    Total: $${(order.totalAmount || 0).toFixed(2)}
+                                </div>
+                                <a href="profile.html" class="view-details-btn">View Details</a>
+                            </div>
+                        `;
+                    });
+                    
+                    ordersContainer.innerHTML = ordersHTML;
+                })
+                .catch((error) => {
+                    console.error("Error getting orders: ", error);
+                    showToast("Failed to load orders. Please try again later.", "error");
+                });
+            }
 
             // Update profile information
             document.getElementById("user-name").textContent = user.displayName || "User";

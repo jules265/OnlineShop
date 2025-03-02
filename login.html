@@ -167,12 +167,24 @@
             auth.signInWithEmailAndPassword(userId, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
+                    
+                    // Update user data in Firestore
+                    db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        displayName: user.displayName,
+                        lastLogin: new Date(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true });
+                    
+                    // Store basic info in localStorage for quick access
                     localStorage.setItem("user", JSON.stringify({
                         id: user.uid,
                         email: user.email,
+                        name: user.displayName,
                         lastLogin: new Date().toISOString()
                     }));
-                    window.location.href = "customer.html";
+                    
+                    window.location.href = "shop.html";
                 })
                 .catch((error) => {
                     if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
@@ -279,15 +291,27 @@
             // Create user with email and password
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
+                    const user = userCredential.user;
+                    
                     // Update profile with name
-                    return userCredential.user.updateProfile({
+                    return user.updateProfile({
                         displayName: name
+                    }).then(() => {
+                        // Create a user document in Firestore
+                        return db.collection('users').doc(user.uid).set({
+                            uid: user.uid,
+                            email: email,
+                            displayName: name,
+                            createdAt: new Date(),
+                            lastLogin: new Date(),
+                            role: 'customer'
+                        });
                     });
                 })
                 .then(() => {
                     const user = auth.currentUser;
                     if (user) {
-                        // Store user data in localStorage
+                        // Store user data in localStorage for quick access
                         localStorage.setItem('user', JSON.stringify({
                             id: user.uid,
                             email: user.email,

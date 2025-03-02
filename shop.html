@@ -340,6 +340,23 @@
                 return;
             }
             
+            // Add user menu with profile link
+            const userMenu = document.createElement('div');
+            userMenu.className = 'user-menu';
+            userMenu.innerHTML = `
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
+            `;
+            
+            // Append to header if it doesn't already exist
+            if (!document.querySelector('.user-menu')) {
+                const nav = document.querySelector('nav ul');
+                if (nav) {
+                    const li = document.createElement('li');
+                    li.appendChild(userMenu);
+                    nav.appendChild(li);
+                }
+            }
+            
             // Load products
             loadProducts();
             

@@ -443,9 +443,31 @@
             }
             
             try {
-                const app = firebase.initializeApp(firebaseConfig);
+                // Check if Firebase is already initialized
+                if (!firebase.apps.length) {
+                    const app = firebase.initializeApp(firebaseConfig);
+                }
                 const auth = firebase.auth();
                 const db = firebase.firestore();
+                
+                // Check authentication state
+                auth.onAuthStateChanged((user) => {
+                    if (!user) {
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    
+                    // Pre-fill email field
+                    document.getElementById('email').value = user.email || '';
+                    
+                    // Pre-fill name if available
+                    if (user.displayName) {
+                        document.getElementById('fullName').value = user.displayName;
+                    }
+                    
+                    loadOrderSummary();
+                    showToast("Welcome to checkout!", "info");
+                });
             } catch (e) {
                 console.error("Firebase initialization error:", e);
                 showToast("Error initializing application.", "error");
