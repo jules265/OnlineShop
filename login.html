@@ -3,351 +3,1085 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Developer Portal</title>
-    <link rel="stylesheet" href="login.css">
-    <!-- <script type="module" src="orderservice.js"></script>
-    <script type="module" src="authservice.js"></script> -->
-    <script type="module" src="firebaseauth.js" defer></script>
+    <title>Login | Nora_tech_Company</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #06b6d4;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --bg-light: #f8fafc;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --radius: 8px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(79, 70, 229, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(20, 184, 166, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .login-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            padding: 20px 30px;
+            color: white;
+            position: relative;
+        }
+
+        .login-header::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -10px;
+            height: 10px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+        }
+
+        .login-header h2 {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .login-body {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background-color: var(--bg-light);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        input.error {
+            border-color: var(--error);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        input.error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+
+        .input-feedback {
+            margin-top: 5px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .input-feedback.error {
+            color: var(--error);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+
+        button:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+        }
+
+        button .btn-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        button:active:after {
+            transform: translate(-50%, -50%) scale(3);
+            transition: transform 0s;
+        }
+
+        .login-footer {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .links {
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            margin: 0 8px;
+        }
+
+        .links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+            transform: translateX(calc(100% + 20px));
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast-icon {
+            margin-right: 12px;
+        }
+
+        .toast-icon.error {
+            color: var(--error);
+        }
+
+        .toast-icon.success {
+            color: var(--success);
+        }
+
+        .toast-icon.warning {
+            color: var(--warning);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        button.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        button.loading .btn-text {
+            margin-left: 8px;
+        }
+
+        /* Create account modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .button-secondary {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .registration-option {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .registration-link {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .registration-link:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .login-card, .modal {
+                max-width: 100%;
+            }
+
+            .login-header, .login-body, .login-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        .social-login {
+            margin-top: 20px;
+        }
+
+        .social-login button {
+            margin-top: 10px;
+        }
+
+        .account-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .account-type-option {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--bg-light);
+        }
+
+        .account-type-option i {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        .account-type-option span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .account-type-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .account-type-option.selected i {
+            color: var(--primary);
+        }
+
+        .admin-login-info {
+            margin-top: 16px;
+            padding: 10px;
+            background-color: rgba(79, 70, 229, 0.05);
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .admin-login-info.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="login-header">
-            <h2>Welcome Back</h2>
-            <p>Please sign in to access your dashboard</p>
-        </div>
-        
-        <div class="login-body">
-            <div class="input-group">
-                <label for="userId">User ID</label>
-                <div class="input-wrapper">
-                    <div class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <input type="text" id="userId" placeholder="Please enter your User ID">
-                </div>
-                <div id="userIdFeedback" class="input-feedback"></div>
-            </div>
-            
-            <button onclick="login()" id="loginButton">
-                <div class="btn-content">
-                    <div class="loading-spinner"></div>
-                    <span class="btn-text">Login</span>
-                </div>
-            </button>
-            <br><br>
-            <button onclick="loginWithGoogle()" id="loginButtonWithGoogle">
-                <div class="btn-content">
-                    <div class="loading-spinner"></div>
-                    <span class="btn-text"> 🎯 Login With Google</span>
-                </div>
-            </button>
-
-            <div class="registration-option">
-                <span>Do you not possess an account?</span> 
-                <a href="#" class="registration-link" onclick="showCreateAccountModal()">Create one</a>
-            </div>
-        </div>
-        
-        <div class="login-footer">
-            <p class="help-text">Securely access your dashboard using your User ID</p>
-            <div class="links">
-                <a href="#">Help</a>
-                <a href="#">Privacy Policy</a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Toast Notifications -->
+    <!-- Toast Notification -->
     <div id="toast" class="toast">
-        <div id="toastIcon" class="toast-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
+        <div class="toast-icon" id="toastIcon">
+            <i class="fas fa-check-circle"></i>
         </div>
         <div class="toast-content">
-            <div class="toast-title" id="toastTitle">Notification</div>
-            <div class="toast-message" id="toastMessage">This is a notification message.</div>
+            <div class="toast-title" id="toastTitle">Success!</div>
+            <div class="toast-message" id="toastMessage">Your action was completed successfully.</div>
         </div>
     </div>
 
-    <!-- Create Account Modal -->
-    <div id="createAccountModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Create a New Account</h3>
-                <button class="modal-close" onclick="hideCreateAccountModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="newUserId">User ID</label>
-                    <div class="input-wrapper">
-                        <div class="input-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        <input type="text" id="newUserId" placeholder="Select a User ID" required>
-                    </div>
-                </div>
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Welcome to Nora_tech_Company</h2>
+            <p>Log in to access your account</p>
+        </div>
+
+        <div class="login-body">
+            <form id="loginForm">
                 <div class="input-group">
                     <label for="email">Email</label>
                     <div class="input-wrapper">
                         <div class="input-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
+                            <i class="fas fa-envelope"></i>
                         </div>
-                        <input type="email" id="email" placeholder="Please enter your email" required>
+                        <input type="email" id="email" placeholder="Enter your email" autocomplete="email">
+                        <div id="emailFeedback" class="input-feedback"></div>
                     </div>
                 </div>
+
                 <div class="input-group">
-                    <label for="phone">Phone Number</label>
+                    <label for="password">Password</label>
                     <div class="input-wrapper">
                         <div class="input-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20.7 16.3l-2.4-2.4a1 1 0 0 0-1.4 0l-1 1a11.17 11.17 0 0 1-7-7l1-1a1 1 0 0 0 0-1.4l-2.4-2.4a1 1 0 0 0-1.4 0l-1 1A14.96 14.96 0 0 0 0 12c0 2.5 1.2 4.8 3.1 6.3 1 .7 2.2.7 3.1 0L6 17.1c1 .7 2.2.7 3.1 0 2-.7 3.3-1.6 4.1-2.5 1.7 1.3 3.6 2.1 5.8 2.1h0a1 1 0 0 0 .7-.3l1-1a1 1 0 0 0-.1-1.4z"></path>
-                            </svg>
+                            <i class="fas fa-lock"></i>
                         </div>
-                        <input type="tel" id="phone" placeholder="Please enter your phone number" required>
+                        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+                        <div id="passwordFeedback" class="input-feedback"></div>
                     </div>
                 </div>
+
                 <div class="input-group">
-                    <label for="address">Address</label>
-                    <div class="input-wrapper">
-                        <div class="input-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M19 6.5V19c0 .55-.45 1-1 1H2a1 1 0 0 1-1-1V6.5c0-.55.45-1 1-1h16c.55 0 1 .45 1 1z"></path>
-                                <path d="M20.29 3.29L14 9.58V8a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1.58l-6.29-6.29A1 1 0 0 1 2.29.29l18 18a1 1 0 1 1-1.42 1.42l-7-7a1 1 0 0 1 0-1.42l7-7a1 1 0 0 1 1.42 1.42z"></path>
-                            </svg>
+                    <label>Account Type</label>
+                    <div class="account-type-selector">
+                        <div class="account-type-option" onclick="selectAccountType(this, 'client')">
+                            <i class="fas fa-user"></i>
+                            <span>Client Account</span>
                         </div>
-                        <input type="text" id="address" placeholder="Please enter your address" required>
+                        <div class="account-type-option" onclick="selectAccountType(this, 'admin')">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin Account</span>
+                        </div>
                     </div>
+                    <input type="hidden" id="accountType" value="client">
                 </div>
+
+                <div id="adminLoginInfo" class="admin-login-info">
+                    <strong>Admin Accounts:</strong>
+                    <ul style="margin-top: 5px; padding-left: 15px;">
+                        <li>Email: nzizajules202@gmail.com</li>
+                        <li>Email: imanzilutfy@gmail.com</li>
+                        <li>Password: 123456@jules</li>
+                    </ul>
+                </div>
+
+                <button type="submit" id="loginButton">
+                    <div class="btn-content">
+                        <div class="loading-spinner"></div>
+                        <span class="btn-text">Log In</span>
+                    </div>
+                </button>
+
+                <div class="social-login">
+                    <button type="button" id="googleLoginButton" style="background-color: #4285F4;">
+                        <div class="btn-content">
+                            <i class="fab fa-google"></i>
+                            <span class="btn-text">Continue with Google</span>
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <div class="registration-option">
+                <span class="help-text">Don't have an account?</span>
+                <a href="#" class="registration-link" id="showRegisterBtn">Create an account</a>
             </div>
-            <div class="modal-footer">
-                <button class="button-secondary" onclick="hideCreateAccountModal()">Cancel</button>
-                <button onclick="createAccount()" id="createAccountButton">Create Account</button>
-            </div>
+        </div>
     </div>
 
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create an Account</h3>
+                <button class="modal-close" id="closeRegisterModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="input-group">
+                        <label for="fullName">Full Name</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="text" id="fullName" placeholder="Enter your full name">
+                            <div id="fullNameFeedback" class="input-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="registerEmail">Email</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input type="email" id="registerEmail" placeholder="Enter your email">
+                            <div id="registerEmailFeedback" class="input-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" id="registerPassword" placeholder="Create a password">
+                            <div id="registerPasswordFeedback" class="input-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                            <div id="confirmPasswordFeedback" class="input-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="registerButton">
+                        <div class="btn-content">
+                            <div class="loading-spinner"></div>
+                            <span class="btn-text">Create Account</span>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Ensure Firebase is loaded before our scripts -->
     <script>
-// Simulated database of existing user accounts
-const userDatabase = [
-    { id: "user1", email: "user1@example.com", lastLogin: "2025-02-25T12:34:56Z" },
-    { id: "user2", email: "user2@example.com", lastLogin: "2025-02-27T09:18:27Z" },
-    { id: "Admin", email: "admin@example.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "Jules", email: "nzizajules202@gmail.com", lastLogin: "2025-02-28T00:12:00Z", Phone:"0788699190" },
-    { id: "ndishimyekay", email: "ndishimyeemilien@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "yasinimyy", email: "yasinimyy27@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "Dolla", email: "uwimpuhwedorcas@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "ellencody", email: "imanzilutfy@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "anitha", email: "uwiringiyimanaanitha@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "cynthia", email: "cynthia@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "prince", email: "k1ngprince@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "fidele", email: "fidele@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "shema", email: "shemapatrick147@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "aline", email: "umutoniwase@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "djuma", email: "assoumandjuma@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "fabrice", email: "fabriceishimwe@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "pazzo", email: "patrick@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "ipviper", email: "ipviper@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "agape", email: "agape@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "reponse", email: "reponse@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "elijah", email: "elijah@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "mukunzi", email: "mukunzi@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "nora", email: "kamikazinora@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "Papa", email: "joelgas@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "Beatha", email: "Uwanyirigirabeatha@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "japheth", email: "japhet@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "kevine", email: "uwasekevine@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-    { id: "augustin", email: "augstin@gmail.com", lastLogin: "2025-02-28T00:12:00Z" },
-];
+        // Check if Firebase is loaded properly
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase SDK failed to load. Please check your internet connection.');
+                alert('Error loading necessary resources. Please refresh the page or try again later.');
+            }
+        });
+    </script>
 
-// Function to register a new user
-function registerUser(id, email , Phone, address) {
-    // Check if user ID or email already exists in the database
-    const userExists = userDatabase.some(user => user.id === id || user.email === email || user.phone === phone || user.address === address);
-    
-    if (userExists) {
-        console.error("Error: User ID or Email already exists.");
-        return;
-    }
-    
-    // Create a new user object
-    const newUser = {
-        id: id,
-        email: email,
-        phone: Phone,
-        address: address,
-        lastLogin: new Date().toISOString() // Set lastLogin to the current date and time
-    };
-    
-    // Add new user to the database
-    userDatabase.push(newUser);
-    console.log("User registered successfully:", newUser);
-}
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
+            authDomain: "usermanagr.firebaseapp.com",
+            projectId: "usermanagr",
+            storageBucket: "usermanagr.appspot.com",
+            messagingSenderId: "201891796617",
+            appId: "1:201891796617:web:ab31f6c5b0e1becb6bd858",
+            measurementId: "G-WPNMDSTYXZ"
+        };
 
-// Example usage
-registerUser("newUser", "newUser@example.com");
-console.log(userDatabase);
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-// You can test registering a duplicate user
-registerUser("newUser", "anotherEmail@example.com");
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const registerModal = document.getElementById('registerModal');
+        const showRegisterBtn = document.getElementById('showRegisterBtn');
+        const closeRegisterModal = document.getElementById('closeRegisterModal');
+        const loginButton = document.getElementById('loginButton');
+        const googleLoginButton = document.getElementById('googleLoginButton');
+        const registerButton = document.getElementById('registerButton');
 
+        // Toast notification
         function showToast(type, title, message) {
-            const toast = document.getElementById("toast");
-            const toastTitle = document.getElementById("toastTitle");
-            const toastMessage = document.getElementById("toastMessage");
-            const toastIcon = document.getElementById("toastIcon");
-            
-            // Conceal any visible toast first
-            toast.classList.remove("show", "error", "success", "warning");
-            
-            // Set content
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+
+            // Set toast content and type
+            toast.className = 'toast show ' + type;
+            toastIcon.className = 'toast-icon ' + type;
+
+            if (type === 'success') {
+                toastIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else if (type === 'error') {
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            } else if (type === 'warning') {
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            }
+
             toastTitle.textContent = title;
             toastMessage.textContent = message;
-            
-            // Assign type classes
-            toast.classList.add(type, "show");
-            toastIcon.classList.remove("error", "success", "warning");
-            toastIcon.classList.add(type);
-            
-            // Auto-hide after 4 seconds
+
+            // Show toast
             setTimeout(() => {
-                toast.classList.remove("show");
+                toast.classList.add('show');
+            }, 100);
+
+            // Hide toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
             }, 4000);
         }
 
-        function login() {
-            const userId = document.getElementById("userId").value.trim();
-            const loginButton = document.getElementById("loginButton");
-            const userIdInput = document.getElementById("userId");
-            const userIdFeedback = document.getElementById("userIdFeedback");
-            
-            // Clear previous feedback
-            userIdInput.classList.remove("error");
-            userIdFeedback.classList.remove("error");
-            userIdFeedback.textContent = "";
-            
-            if (!userId) {
-                userIdInput.classList.add("error");
-                userIdFeedback.classList.add("error");
-                userIdFeedback.textContent = "User ID is required";
-                return;
+        // Toggle loading state on button
+        function setLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('loading');
+                button.disabled = false;
             }
-            
-            // Display loading state
-            loginButton.classList.add("loading");
-            loginButton.disabled = true;
-            
-            // Simulate server validation (500ms delay)
-            setTimeout(() => {
-                // Examine if the user exists in the database
-                const user = userDatabase.find(u => u.id === userId , u => u.name === name, u => u.email === email);
-                
-                if (user) {
-                    // User exists - indicate success and redirect
-                    showToast("success", "Success", "Login successful! You will be redirected shortly...");
-                    
-                    // Store user data in local storage
-                    localStorage.setItem("user", JSON.stringify({ 
-                        id: user.id,
-                        email: user.email,
-                        lastLogin: new Date().toISOString(),
-                        previousLogin: user.lastLogin,
-                        isActive: true
+        }
+
+        // Account type selection
+        function selectAccountType(element, type) {
+            // Remove selected class from all options
+            document.querySelectorAll('.account-type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            element.classList.add('selected');
+
+            // Set account type value
+            document.getElementById('accountType').value = type;
+
+            // Show admin credentials info if admin is selected
+            const adminLoginInfo = document.getElementById('adminLoginInfo');
+            if (type === 'admin') {
+                adminLoginInfo.classList.add('show');
+            } else {
+                adminLoginInfo.classList.remove('show');
+            }
+        }
+
+        // Login functionality
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const accountType = document.getElementById('accountType').value;
+            const emailFeedback = document.getElementById('emailFeedback');
+            const passwordFeedback = document.getElementById('passwordFeedback');
+
+            // Check if trying to login as admin
+            if (accountType === 'admin') {
+                // Verify admin credentials
+                const adminCredentials = [
+                    { email: 'nzizajules202@gmail.com', password: '123456@jules' },
+                    { email: 'imanzilutfy@gmail.com', password: '123456@jules' }
+                ];
+
+                const isAdmin = adminCredentials.some(admin => 
+                    admin.email === email && admin.password === password
+                );
+
+                if (isAdmin) {
+                    // Store admin user info
+                    localStorage.setItem("user", JSON.stringify({
+                        id: 'admin-' + new Date().getTime(),
+                        email: email,
+                        name: 'Admin',
+                        role: 'admin',
+                        lastLogin: new Date().toISOString()
                     }));
-                    
-                    // Redirect after a brief delay
+
+                    showToast('success', 'Admin Login Successful', 'Welcome back, Admin!');
+
+                    // Redirect to admin page
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 1000);
+                    return;
+                } else {
+                    // Invalid admin credentials
+                    emailFeedback.textContent = 'Invalid admin credentials';
+                    emailFeedback.className = 'input-feedback error';
+                    showToast('error', 'Admin Login Failed', 'Invalid admin email or password.');
+                    return;
+                }
+            }
+
+            // Clear previous feedback
+            emailFeedback.textContent = '';
+            emailFeedback.className = 'input-feedback';
+            passwordFeedback.textContent = '';
+            passwordFeedback.className = 'input-feedback';
+
+            // Form validation
+            let isValid = true;
+
+            if (!email) {
+                emailFeedback.textContent = 'Email is required';
+                emailFeedback.className = 'input-feedback error';
+                document.getElementById('email').classList.add('error');
+                isValid = false;
+            }
+
+            if (!password) {
+                passwordFeedback.textContent = 'Password is required';
+                passwordFeedback.className = 'input-feedback error';
+                document.getElementById('password').classList.add('error');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Show loading state
+            setLoading(loginButton, true);
+
+            // Attempt login
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+
+                    // Update user data in Firestore
+                    db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        displayName: user.displayName,
+                        lastLogin: new Date(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true });
+
+                    // Store user in localStorage
+                    localStorage.setItem("user", JSON.stringify({
+                        id: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        lastLogin: new Date().toISOString()
+                    }));
+
+                    showToast('success', 'Success!', 'You have successfully logged in.');
+
+                    // Redirect after a short delay
                     setTimeout(() => {
                         window.location.href = "index.html";
-                    }, 2500);
-                } else {
-                    // User does not exist
-                    loginButton.classList.remove("loading");
-                    loginButton.disabled = false;
-                    
-                    userIdInput.classList.add("error");
-                    userIdFeedback.classList.add("error");
-                    userIdFeedback.textContent = "Account not found. Kindly verify your User ID or create a new account.";
-                    
-                    showToast("error", "Account Not Found", "No account exists under this User ID");
-                }
-            }, 800);
-        }
-        
-        function showCreateAccountModal() {
-            document.getElementById("createAccountModal").classList.add("show");
-        }
-        
-        function hideCreateAccountModal() {
-            document.getElementById("createAccountModal").classList.remove("show");
-        }
-        
-        function createAccount() {
-            const newUserId = document.getElementById("newUserId").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const createButton = document.getElementById("createAccountButton");
-            
-            if (!newUserId || !email) {
-                showToast("warning", "Incomplete Information", "Please fill in all fields");
-                return;
-            }
-            
-            // Check if user already exists
-            if (userDatabase.some(u => u.id === newUserId)) {
-                showToast("warning", "User ID Taken", "This User ID is already in use");
-                return;
-            }
-            
-            // Activate loading state
-            createButton.classList.add("loading");
-            createButton.disabled = true;
-            
-            // Simulate account creation delay
-            setTimeout(() => {
-                // Add to simulated database
-                userDatabase.push({
-                    id: newUserId,
-                    email: email,
-                    lastLogin: new Date().toISOString()
+                    }, 1000);
+                })
+                .catch((error) => {
+                    setLoading(loginButton, false);
+
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        emailFeedback.textContent = 'Invalid email or password';
+                        emailFeedback.className = 'input-feedback error';
+                        showToast('error', 'Login Failed', 'Invalid email or password. Please try again.');
+                    } else {
+                        showToast('error', 'Login Error', error.message);
+                    }
                 });
-                
-                // Conceal modal
-                hideCreateAccountModal();
-                
-                // Reset form
-                document.getElementById("newUserId").value = "";
-                document.getElementById("email").value = "";
-                
-                // Reset button state
-                createButton.classList.remove("loading");
-                createButton.disabled = false;
-                
-                // Display success message
-                showToast("success", "Account Created", "Your account has been successfully established");
-                
-                // Pre-fill the login form with the new user ID
-                document.getElementById("userId").value = newUserId;
-            }, 1000);
-        }
-        
-        // Allow login on Enter key press
-        document.getElementById("userId").addEventListener("keyup", function(event) {
-            if (event.key === "Enter") {
-                login();
+        });
+
+        // Google login
+        googleLoginButton.addEventListener('click', function() {
+            setLoading(googleLoginButton, true);
+
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+
+                    // Store user in localStorage
+                    localStorage.setItem("user", JSON.stringify({
+                        id: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        lastLogin: new Date().toISOString()
+                    }));
+
+                    // Update or create user document in Firestore
+                    db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        lastLogin: new Date(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true });
+
+                    showToast('success', 'Success!', 'You have successfully logged in with Google.');
+
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1000);
+                })
+                .catch((error) => {
+                    setLoading(googleLoginButton, false);
+                    showToast('error', 'Google Login Failed', error.message);
+                });
+        });
+
+        // Registration functionality
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            const fullNameFeedback = document.getElementById('fullNameFeedback');
+            const emailFeedback = document.getElementById('registerEmailFeedback');
+            const passwordFeedback = document.getElementById('registerPasswordFeedback');
+            const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
+
+            // Clear previous feedback
+            fullNameFeedback.textContent = '';
+            fullNameFeedback.className = 'input-feedback';
+            emailFeedback.textContent = '';
+            emailFeedback.className = 'input-feedback';
+            passwordFeedback.textContent = '';
+            passwordFeedback.className = 'input-feedback';
+            confirmPasswordFeedback.textContent = '';
+            confirmPasswordFeedback.className = 'input-feedback';
+
+            document.getElementById('fullName').classList.remove('error');
+            document.getElementById('registerEmail').classList.remove('error');
+            document.getElementById('registerPassword').classList.remove('error');
+            document.getElementById('confirmPassword').classList.remove('error');
+
+            // Form validation
+            let isValid = true;
+
+            if (!fullName) {
+                fullNameFeedback.textContent = 'Full name is required';
+                fullNameFeedback.className = 'input-feedback error';
+                document.getElementById('fullName').classList.add('error');
+                isValid = false;
+            }
+
+            if (!email) {
+                emailFeedback.textContent = 'Email is required';
+                emailFeedback.className = 'input-feedback error';
+                document.getElementById('registerEmail').classList.add('error');
+                isValid = false;
+            }
+
+            if (!password) {
+                passwordFeedback.textContent = 'Password is required';
+                passwordFeedback.className = 'input-feedback error';
+                document.getElementById('registerPassword').classList.add('error');
+                isValid = false;
+            } else if (password.length < 6) {
+                passwordFeedback.textContent = 'Password must be at least 6 characters';
+                passwordFeedback.className = 'input-feedback error';
+                document.getElementById('registerPassword').classList.add('error');
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                confirmPasswordFeedback.textContent = 'Passwords do not match';
+                confirmPasswordFeedback.className = 'input-feedback error';
+                document.getElementById('confirmPassword').classList.add('error');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Show loading state
+            setLoading(registerButton, true);
+
+            // Create account
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+
+                    // Update profile with name
+                    return user.updateProfile({
+                        displayName: fullName
+                    }).then(() => {
+                        // Create a user document in Firestore
+                        return db.collection('users').doc(user.uid).set({
+                            uid: user.uid,
+                            email: email,
+                            displayName: fullName,
+                            createdAt: new Date(),
+                            lastLogin: new Date(),
+                            role: 'customer'
+                        });
+                    });
+                })
+                .then(() => {
+                    const user = auth.currentUser;
+                    if (user) {
+                        // Store user data in localStorage for quick access
+                        localStorage.setItem('user', JSON.stringify({
+                            id: user.uid,
+                            email: user.email,
+                            name: fullName,
+                            lastLogin: new Date().toISOString()
+                        }));
+
+                        showToast('success', 'Account Created', 'Your account has been successfully created!');
+
+                        // Close modal and redirect
+                        setTimeout(() => {
+                            registerModal.classList.remove('show');
+                            window.location.href = 'shop.html';
+                        }, 1000);
+                    }
+                })
+                .catch((error) => {
+                    setLoading(registerButton, false);
+
+                    if (error.code === 'auth/email-already-in-use') {
+                        emailFeedback.textContent = 'Email is already in use';
+                        emailFeedback.className = 'input-feedback error';
+                        document.getElementById('registerEmail').classList.add('error');
+                    } else {
+                        showToast('error', 'Registration Failed', error.message);
+                    }
+                });
+        });
+
+        // Modal controls
+        showRegisterBtn.addEventListener('click', function() {
+            registerModal.classList.add('show');
+        });
+
+        closeRegisterModal.addEventListener('click', function() {
+            registerModal.classList.remove('show');
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === registerModal) {
+                registerModal.classList.remove('show');
+            }
+        });
+
+        // Input field validation reset
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.remove('error');
+                const feedbackId = this.id + 'Feedback';
+                const feedback = document.getElementById(feedbackId);
+                if (feedback) {
+                    feedback.textContent = '';
+                    feedback.className = 'input-feedback';
+                }
+            });
+        });
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = "shop.html";
             }
         });
     </script>

@@ -1,18 +1,649 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | StyleShop</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM8Yp5e+0Y8bGMQPpGHD8R8Jf6dPHEE4mL1gXS" crossorigin="anonymous" />
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module">
-        // Initialize Firebase with the config
+    <title>Admin Dashboard | StyleShop</title>
+    <style>
+        :root {
+            --primary: #4a4af4;
+            --primary-light: #e8e8ff;
+            --danger: #ff5555;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --text-dark: #333;
+            --text-light: #666;
+            --border: #ddd;
+            --bg-light: #f5f5f5;
+            --bg-white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-white);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-link:hover {
+            background-color: var(--bg-light);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .card {
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--bg-white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--bg-light);
+        }
+
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-processing {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+
+        .status-shipped {
+            background-color: #D1ECF1;
+            color: #0C5460;
+        }
+
+        .status-delivered {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .action-btn:hover {
+            background-color: var(--bg-light);
+        }
+
+        .action-btn.edit:hover {
+            color: #2196F3;
+            border-color: #2196F3;
+        }
+
+        .action-btn.delete:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3939c7;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: 1rem 0;
+            }
+            
+            .logo {
+                padding: 0 0.5rem 1rem;
+                justify-content: center;
+            }
+            
+            .logo span {
+                display: none;
+            }
+            
+            .sidebar-nav-link span {
+                display: none;
+            }
+            
+            .sidebar-nav-link {
+                padding: 0.75rem;
+                justify-content: center;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <span>StyleShop Admin</span>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="#dashboard" class="sidebar-nav-link active" onclick="showTab('dashboard')">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="#products" class="sidebar-nav-link" onclick="showTab('products')">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="#orders" class="sidebar-nav-link" onclick="showTab('orders')">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="#customers" class="sidebar-nav-link" onclick="showTab('customers')">
+                    <span>Customers</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="#job-requests" class="sidebar-nav-link" onclick="showTab('job-requests')">
+                    <span>Job Requests</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="shop.html" class="sidebar-nav-link">
+                    <span>View Shop</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h2>Admin Dashboard</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </header>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-orders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-customers">0</div>
+                    <div class="stat-label">Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-revenue">$0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-products">0</div>
+                    <div class="stat-label">Products</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Orders</h3>
+                    <a href="#orders" onclick="showTab('orders')">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-table">
+                                <!-- Recent orders will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="products-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Products</h3>
+                    <button class="btn btn-primary" onclick="showProductForm()">Add Product</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table">
+                                <!-- Products will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Form -->
+            <div id="product-form" class="card" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title" id="product-form-title">Add New Product</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" class="form-control" placeholder="Enter product name">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <select id="product-category" class="form-control">
+                                <option value="">Select a category</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Footwear">Footwear</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Transporting">Transporting</option>
+                                <option value="Building">Building</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Home">Home & Garden</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="product-price">Price ($)</label>
+                            <input type="number" id="product-price" class="form-control" placeholder="0.00" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="product-stock">Stock</label>
+                            <input type="number" id="product-stock" class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-image">Image URL</label>
+                        <input type="text" id="product-image" class="form-control" placeholder="Enter image URL">
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+                        <button class="action-btn" onclick="cancelProductForm()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">All Orders</h3>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" onclick="filterOrders('all')">All</div>
+                        <div class="tab" onclick="filterOrders('Processing')">Processing</div>
+                        <div class="tab" onclick="filterOrders('Shipped')">Shipped</div>
+                        <div class="tab" onclick="filterOrders('Delivered')">Delivered</div>
+                        <div class="tab" onclick="filterOrders('Cancelled')">Cancelled</div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table">
+                                <!-- Orders will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="customers-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Customers</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Orders</th>
+                                    <th>Total Spent</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-table">
+                                <!-- Customers will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Requests Tab -->
+        <div id="job-requests-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Job Applications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" onclick="filterJobRequests('all')">All</div>
+                        <div class="tab" onclick="filterJobRequests('Pending')">Pending</div>
+                        <div class="tab" onclick="filterJobRequests('Reviewing')">Reviewing</div>
+                        <div class="tab" onclick="filterJobRequests('Accepted')">Accepted</div>
+                        <div class="tab" onclick="filterJobRequests('Rejected')">Rejected</div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Job Type</th>
+                                    <th>Experience</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="job-requests-table">
+                                <!-- Job requests will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
             authDomain: "usermanagr.firebaseapp.com",
@@ -22,420 +653,806 @@
             appId: "1:201891796617:web:ab31f6c5b0e1becb6bd858",
             measurementId: "G-WPNMDSTYXZ"
         };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore();
 
-        // Function to fetch users from Firestore
-        async function fetchUsers() {
-            const usersCollection = collection(db, "users");
-            const userSnapshot = await getDocs(usersCollection);
-            const usersList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            return usersList;
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            // For a real admin panel, you would check if the user has admin rights
+            // For this demo, we'll just display the data
+            loadDashboardData();
+            loadProducts();
+            loadOrders();
+            loadCustomers();
+        });
+
+        // Show and hide tabs
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected tab content
+            document.getElementById(tabId + '-tab').classList.add('active');
+            
+            // Update active state in sidebar
+            document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.querySelector(`a[href="#${tabId}"]`).classList.add('active');
         }
 
-        // Call function to fetch users
-        fetchUsers().then(users => {
-            // Display users in a table (ensure you have a table present in your Admin Panel HTML)
-            const usersTableBody = document.getElementById('users-table').getElementsByTagName('tbody')[0];
-            users.forEach(user => {
-                let row = usersTableBody.insertRow();
-                row.insertCell(0).innerText = user.uid;
-                row.insertCell(1).innerText = user.email;
-                // Any other user info you want to display
+        // Load dashboard data
+        function loadDashboardData() {
+            // Get orders from local storage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            
+            // Calculate statistics
+            document.getElementById('total-orders').textContent = orders.length;
+            
+            const customers = new Set();
+            let totalRevenue = 0;
+            
+            orders.forEach(order => {
+                if (order.customer && order.customer.email) {
+                    customers.add(order.customer.email);
+                }
+                totalRevenue += order.total || 0;
             });
-        }).catch(error => {
-            console.error("Error fetching users:", error);
-        });
-    </script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            background-color: #f4f4f4;
-            color: #333;
+            
+            document.getElementById('total-customers').textContent = customers.size;
+            document.getElementById('total-revenue').textContent = '$' + totalRevenue.toFixed(2);
+            
+            // Get products
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            document.getElementById('total-products').textContent = products.length;
+            
+            // Display recent orders (last 5)
+            const recentOrders = orders.slice(-5).reverse();
+            displayOrders(recentOrders, 'recent-orders-table');
+        }
+
+        // Load all products
+        function loadProducts() {
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            const productsTable = document.getElementById('products-table');
+            
+            if (products.length === 0) {
+                productsTable.innerHTML = '<tr><td colspan="7" style="text-align: center;">No products found</td></tr>';
+                return;
+            }
+            
+            productsTable.innerHTML = products.map(product => `
+                <tr>
+                    <td>${product.id}</td>
+                    <td><img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
+                    <td>${product.name}</td>
+                    <td><span class="badge badge-primary">${product.category || 'Uncategorized'}</span></td>
+                    <td>$${product.price.toFixed(2)}</td>
+                    <td>${product.stock || 'N/A'}</td>
+                    <td>
+                        <button class="action-btn edit" onclick="editProduct('${product.id}')">Edit</button>
+                        <button class="action-btn delete" onclick="deleteProduct('${product.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Show product form for add/edit
+        function showProductForm(productId = null) {
+            const form = document.getElementById('product-form');
+            const formTitle = document.getElementById('product-form-title');
+            form.style.display = 'block';
+            
+            // Clear form
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-category').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-stock').value = '';
+            document.getElementById('product-description').value = '';
+            document.getElementById('product-image').value = '';
+            
+            if (productId) {
+                // Edit mode
+                formTitle.textContent = 'Edit Product';
+                const products = JSON.parse(localStorage.getItem('products') || '[]');
+                const product = products.find(p => p.id === productId);
+                
+                if (product) {
+                    document.getElementById('product-name').value = product.name || '';
+                    document.getElementById('product-category').value = product.category || '';
+                    document.getElementById('product-price').value = product.price || '';
+                    document.getElementById('product-stock').value = product.stock || '';
+                    document.getElementById('product-description').value = product.description || '';
+                    document.getElementById('product-image').value = product.image || '';
+                    
+                    // Store product ID for update
+                    form.dataset.productId = productId;
+                }
+            } else {
+                // Add mode
+                formTitle.textContent = 'Add New Product';
+                delete form.dataset.productId;
+            }
+        }
+
+        // Hide product form
+        function cancelProductForm() {
+            document.getElementById('product-form').style.display = 'none';
+        }
+
+        // Save product (add or update)
+        function saveProduct() {
+            const form = document.getElementById('product-form');
+            const productId = form.dataset.productId;
+            
+            const product = {
+                id: productId || 'PROD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                name: document.getElementById('product-name').value.trim(),
+                category: document.getElementById('product-category').value,
+                price: parseFloat(document.getElementById('product-price').value) || 0,
+                stock: parseInt(document.getElementById('product-stock').value) || 0,
+                description: document.getElementById('product-description').value.trim(),
+                image: document.getElementById('product-image').value.trim() || 'https://via.placeholder.com/150'
+            };
+            
+            // Validate
+            if (!product.name) {
+                alert('Please enter a product name');
+                return;
+            }
+            
+            // Get existing products
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            
+            if (productId) {
+                // Update existing product
+                const index = products.findIndex(p => p.id === productId);
+                if (index !== -1) {
+                    products[index] = product;
+                }
+            } else {
+                // Add new product
+                products.push(product);
+            }
+            
+            // Save to local storage
+            localStorage.setItem('products', JSON.stringify(products));
+            
+            // Reload products and hide form
+            loadProducts();
+            cancelProductForm();
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            showProductForm(productId);
+        }
+
+        // Delete product
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+            
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            const filteredProducts = products.filter(p => p.id !== productId);
+            localStorage.setItem('products', JSON.stringify(filteredProducts));
+            loadProducts();
+        }
+
+        // Load all orders
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            displayOrders(orders.reverse(), 'orders-table');
+        }
+
+        // Display orders in a table
+        function displayOrders(orders, tableId) {
+            const ordersTable = document.getElementById(tableId);
+            
+            if (orders.length === 0) {
+                ordersTable.innerHTML = '<tr><td colspan="7" style="text-align: center;">No orders found</td></tr>';
+                return;
+            }
+            
+            ordersTable.innerHTML = orders.map(order => `
+                <tr>
+                    <td>${order.id}</td>
+                    <td>${order.customer?.name || 'Unknown'}</td>
+                    <td>${new Date(order.date).toLocaleDateString()}</td>
+                    <td><span class="status status-${order.status?.toLowerCase() || 'processing'}">${order.status || 'Processing'}</span></td>
+                    <td><span class="badge badge-primary">${order.items?.length || 0} items</span></td>
+                    <td>$${order.total?.toFixed(2) || '0.00'}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewOrder('${order.id}')">View</button>
+                        <button class="action-btn" onclick="updateOrderStatus('${order.id}')">Update</button>
+                        <button class="action-btn" style="background-color: #4caf50; color: white;" onclick="markOrderDelivered('${order.id}')">Delivered</button>
+                        <button class="action-btn" style="background-color: #f44336; color: white;" onclick="removeOrder('${order.id}')">Remove</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter orders by status
+        function filterOrders(status) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            
+            // Update active tab
+            document.querySelectorAll('#orders-tab .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (status === 'all') {
+                displayOrders(orders.reverse(), 'orders-table');
+            } else {
+                const filteredOrders = orders.filter(order => order.status === status);
+                displayOrders(filteredOrders.reverse(), 'orders-table');
+            }
+        }
+
+        // View order details
+        function viewOrder(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const order = orders.find(o => o.id === orderId);
+            
+            if (order) {
+                const orderDetails = `
+                    Order ID: ${order.id}
+                    Date: ${new Date(order.date).toLocaleString()}
+                    Status: ${order.status || 'Processing'}
+                    
+                    Customer:
+                    Name: ${order.customer?.name || 'Unknown'}
+                    Email: ${order.customer?.email || 'N/A'}
+                    Phone: ${order.customer?.phone || 'N/A'}
+                    Address: ${order.customer?.address || 'N/A'}
+                    
+                    Items:
+                    ${order.items?.map(item => `- ${item.name} × ${item.quantity} ($${item.price.toFixed(2)} each)`).join('\n    ') || 'No items'}
+                    
+                    Subtotal: $${order.subtotal?.toFixed(2) || '0.00'}
+                    Tax: $${order.tax?.toFixed(2) || '0.00'}
+                    Shipping: $${order.shipping?.toFixed(2) || '0.00'}
+                    Total: $${order.total?.toFixed(2) || '0.00'}
+                `;
+                
+                alert(orderDetails);
+            }
         }
         
-        header {
-            background: #333;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: #6256ec;
-            color: white;
-            padding: 20px;
-            height: 100%;
-            position: sticky;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar h2 {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            margin: 5px 0;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #5437c2;
-        }
-
-        .container {
-            padding: 20px;
-            flex: 1; 
-            overflow-y: auto;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        h2 {
-            margin-top: 0;
-            border-bottom: 2px solid #6256ec;
-            padding-bottom: 10px;
-        }
-
-        .statistics {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-
-        .stat {
-            flex: 1;
-            margin: 0 10px;
-            text-align: center;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat h3 {
-            margin: 0;
-            font-size: 2em;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: #6256ec;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #5437c2;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #6256ec;
-            color: white;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .chart-container {
-            position: relative;
-            margin: auto;
-            height: 40vh;
-            width: 80vw;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-            }
-
-            .statistics {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-<header>
-    <h1>Admin Panel</h1>
-</header>
-<div class="sidebar">
-    <h2>Navigation</h2>
-    <a href="#dashboard" onclick="navigate('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-    <a href="#manage-products" onclick="navigate('manage-products')"><i class="fas fa-box"></i> Manage Products</a>
-    <a href="#view-orders" onclick="navigate('view-orders')"><i class="fas fa-shopping-cart"></i> View Orders</a>
-    <a href="#manage-users" onclick="navigate('manage-users')"><i class="fas fa-users"></i> Manage Users</a>
-</div>
-
-<div class="container" id="content">
-    <div id="dashboard" class="card">
-        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
-        <div class="statistics">
-            <div class="stat">
-                <h3 id="orderCount">0</h3>
-                <p>Total Orders</p>
-            </div>
-            <div class="stat">
-                <h3 id="userCount">0</h3>
-                <p>Total Users</p>
-            </div>
-        </div>
-        <div class="chart-container">
-            <canvas id="orderChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="userChart"></canvas>
-        </div>
-    </div>
-
-    <div id="manage-products" class="card" style="display: none;">
-        <h2><i class="fas fa-box"></i> Add New Product</h2>
-        <form id="add-product-form">
-            <input type="text" id="product-name" placeholder="Product Name" required>
-            <input type="number" id="product-price" placeholder="Product Price" required min="0">
-            <input type="text" id="product-image" placeholder="Image URL" required>
-            <button type="submit">Add Product</button>
-        </form>
-    </div>
-
-    <div id="view-orders" class="card" style="display: none;">
-        <h2><i class="fas fa-shopping-cart"></i> Customer Orders</h2>
-        <table id="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer Name</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Orders will be added here dynamically -->
-            </tbody>
-        </table>
-    </div>
-
-    <div id="manage-users" class="card" style="display: none;">
-        <h2><i class="fas fa-users"></i> Manage Users</h2>
-        <form id="add-user-form">
-            <input type="text" id="user-name" placeholder="User Name" required>
-            <input type="text" id="user-email" placeholder="Email" required>
-            <button type="submit">Add User</button>
-        </form>
-        <table id="users-table">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Users will be added here dynamically -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ordersData = JSON.parse(localStorage.getItem('orders')) || [
-        { id: 'ORD-001', customer: 'Alice Johnson', total: 150, status: 'Delivered' },
-        { id: 'ORD-002', customer: 'Bob Smith', total: 200, status: 'Processing' }
-    ];
-
-    const usersData = JSON.parse(localStorage.getItem('users')) || [
-        { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },
-        { id: 2, name: 'Bob Smith', email: 'bob@example.com' }
-    ];
-
-    // Function to update statistics
-    function updateStatistics() {
-        document.getElementById('orderCount').innerText = ordersData.length;
-        document.getElementById('userCount').innerText = usersData.length;
-
-        // Update charts
-        updateOrderChart();
-        updateUserChart();
-    }
-
-    // Function to display orders in the table
-    function displayOrders() {
-        const ordersTableBody = document.getElementById('orders-table').getElementsByTagName('tbody')[0];
-        ordersTableBody.innerHTML = ""; // Clear existing rows
-        ordersData.forEach(order => {
-            let row = ordersTableBody.insertRow();
-            row.insertCell(0).innerText = order.id;
-            row.insertCell(1).innerText = order.customer;
-            row.insertCell(2).innerText = `$${order.total.toFixed(2)}`;
-            row.insertCell(3).innerText = order.status;
-        });
-    }
-
-    // Function to display users in the table
-    function displayUsers() {
-        const usersTableBody = document.getElementById('users-table').getElementsByTagName('tbody')[0];
-        usersTableBody.innerHTML = ""; // Clear existing rows
-        usersData.forEach(user => {
-            let row = usersTableBody.insertRow();
-            row.insertCell(0).innerText = user.id;
-            row.insertCell(1).innerText = user.name;
-            row.insertCell(2).innerText = user.email;
-        });
-    }
-
-    // Function to handle adding new products
-    document.getElementById('add-product-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const productName = document.getElementById('product-name').value;
-        const productPrice = document.getElementById('product-price').value;
-        const productImage = document.getElementById('product-image').value;
-
-        alert(`Product Added:\nName: ${productName}\nPrice: $${productPrice}\nImage URL: ${productImage}`);
-        this.reset();
-    });
-
-    // Function to handle adding new users
-    document.getElementById('add-user-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const userName = document.getElementById('user-name').value;
-        const userEmail = document.getElementById('user-email').value;
-
-        const newUser = {
-            id: usersData.length + 1,
-            name: userName,
-            email: userEmail,
-        };
-
-        usersData.push(newUser);
-        localStorage.setItem('users', JSON.stringify(usersData));
-        displayUsers();
-        updateStatistics();
-
-        this.reset();
-    });
-
-    // Navigation function
-    function navigate(section) {
-        const sections = ['dashboard', 'manage-products', 'view-orders', 'manage-users'];
-        sections.forEach(id => {
-            document.getElementById(id).style.display = id === section ? 'block' : 'none';
-        });
-        if (section === 'dashboard') {
-            updateStatistics();
-        } else if (section === 'view-orders') {
-            displayOrders();
-        } else if (section === 'manage-users') {
-            displayUsers();
-        }
-    }
-
-    // Chart.js setup
-    const orderChartCtx = document.getElementById('orderChart').getContext('2d');
-    const userChartCtx = document.getElementById('userChart').getContext('2d');
-
-    function updateOrderChart() {
-        const orderChart = new Chart(orderChartCtx, {
-            type: 'bar',
-            data: {
-                labels: ordersData.map(o => o.id),
-                datasets: [{
-                    label: 'Order Amounts',
-                    data: ordersData.map(o => o.total),
-                    backgroundColor: 'rgba(99, 132, 255, 0.6)',
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        // Mark order as delivered
+        function markOrderDelivered(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                
+                // Ask for confirmation and a message for the customer
+                const confirmDelivery = confirm(`Mark order ${order.id} as delivered?`);
+                if (!confirmDelivery) return;
+                
+                const deliveryMessage = prompt(
+                    `Enter a message to notify ${order.customer?.name || 'the customer'} about their delivery:`, 
+                    `Your order ${order.id} has been delivered. Thank you for shopping with Nora_tech_Company!`
+                );
+                
+                if (deliveryMessage !== null) {
+                    // Update order status
+                    orders[orderIndex].status = 'Delivered';
+                    orders[orderIndex].deliveryDate = new Date().toISOString();
+                    orders[orderIndex].deliveryMessage = deliveryMessage;
+                    
+                    // Save notification for the customer
+                    if (order.customer && order.customer.email) {
+                        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                        notifications.push({
+                            id: 'notif-' + Date.now(),
+                            userId: order.customer.email,
+                            type: 'order_delivered',
+                            title: 'Your Order Has Been Delivered!',
+                            message: deliveryMessage,
+                            orderId: order.id,
+                            date: new Date().toISOString(),
+                            read: false
+                        });
+                        
+                        localStorage.setItem('notifications', JSON.stringify(notifications));
                     }
+                    
+                    // Save updated orders
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    
+                    // Refresh the orders display
+                    loadOrders();
+                    loadDashboardData();
+                    
+                    alert(`Order ${order.id} marked as delivered and customer has been notified.`);
                 }
             }
-        });
-    }
-
-    function updateUserChart() {
-        const userChart = new Chart(userChartCtx, {
-            type: 'line',
-            data: {
-                labels: usersData.map(u => u.name),
-                datasets: [{
-                    label: 'Users',
-                    data: usersData.map((_, idx) => idx + 1),
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    fill: false // Don't fill the area under the line
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        }
+        
+        // Remove order
+        function removeOrder(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                
+                // Ask for confirmation and a message for the customer
+                const confirmRemoval = confirm(`Are you sure you want to remove order ${order.id}?`);
+                if (!confirmRemoval) return;
+                
+                const removalMessage = prompt(
+                    `Enter a message to notify ${order.customer?.name || 'the customer'} about their order removal:`, 
+                    `Your order ${order.id} has been canceled. Please contact customer support if you have any questions.`
+                );
+                
+                if (removalMessage !== null) {
+                    // Save notification for the customer before removing the order
+                    if (order.customer && order.customer.email) {
+                        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                        notifications.push({
+                            id: 'notif-' + Date.now(),
+                            userId: order.customer.email,
+                            type: 'order_removed',
+                            title: 'Your Order Has Been Canceled',
+                            message: removalMessage,
+                            orderId: order.id,
+                            date: new Date().toISOString(),
+                            read: false
+                        });
+                        
+                        localStorage.setItem('notifications', JSON.stringify(notifications));
                     }
+                    
+                    // Remove the order
+                    orders.splice(orderIndex, 1);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    
+                    // Refresh the orders display
+                    loadOrders();
+                    loadDashboardData();
+                    
+                    alert(`Order ${order.id} has been removed and customer has been notified.`);
                 }
             }
-        });
-    }
+        }
 
-    // Initial load
-    window.onload = function() {
-        navigate('dashboard'); // Show dashboard by default
-        updateStatistics();
-        displayOrders();
-        displayUsers();
-    };
-</script>
+        // Update order status
+        function updateOrderStatus(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                const currentStatus = order.status || 'Processing';
+                
+                let newStatus;
+                switch (currentStatus) {
+                    case 'Processing':
+                        newStatus = 'Shipped';
+                        break;
+                    case 'Shipped':
+                        newStatus = 'Delivered';
+                        break;
+                    case 'Delivered':
+                        newStatus = 'Completed';
+                        break;
+                    default:
+                        newStatus = 'Processing';
+                }
+                
+                // Allow custom status
+                const customStatus = prompt(`Update order status (current: ${currentStatus})`, newStatus);
+                if (customStatus) {
+                    orders[orderIndex].status = customStatus;
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    loadOrders();
+                    loadDashboardData();
+                }
+            }
+        }
+
+        // Load customers
+        function loadCustomers() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const customersTable = document.getElementById('customers-table');
+            
+            // Extract unique customers
+            const customersMap = new Map();
+            
+            orders.forEach(order => {
+                if (order.customer && order.customer.email) {
+                    const email = order.customer.email;
+                    
+                    if (!customersMap.has(email)) {
+                        customersMap.set(email, {
+                            name: order.customer.name || 'Unknown',
+                            email: email,
+                            orders: 0,
+                            spent: 0,
+                            joined: order.date
+                        });
+                    }
+                    
+                    const customer = customersMap.get(email);
+                    customer.orders++;
+                    customer.spent += order.total || 0;
+                    
+                    // Update join date to earliest order
+                    if (new Date(order.date) < new Date(customer.joined)) {
+                        customer.joined = order.date;
+                    }
+                }
+            });
+            
+            const customers = Array.from(customersMap.values());
+            
+            if (customers.length === 0) {
+                customersTable.innerHTML = '<tr><td colspan="6" style="text-align: center;">No customers found</td></tr>';
+                return;
+            }
+            
+            customersTable.innerHTML = customers.map(customer => `
+                <tr>
+                    <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.orders}</td>
+                    <td>$${customer.spent.toFixed(2)}</td>
+                    <td>${new Date(customer.joined).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewCustomerOrders('${customer.email}')">View Orders</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // View orders for a specific customer
+        function viewCustomerOrders(email) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const customerOrders = orders.filter(order => order.customer && order.customer.email === email);
+            
+            showTab('orders');
+            displayOrders(customerOrders.reverse(), 'orders-table');
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                auth.signOut().then(() => {
+                    window.location.href = 'login.html';
+                }).catch((error) => {
+                    console.error('Error signing out:', error);
+                });
+            }
+        }
+
+        // Initialize with some demo products if none exist
+        function initializeDemoData() {
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            
+            if (products.length === 0) {
+                const demoProducts = [
+                    {
+                        id: 'PROD-1',
+                        name: 'Classic T-Shirt',
+                        category: 'Clothing',
+                        price: 24.99,
+                        stock: 100,
+                        description: 'Comfortable cotton t-shirt for everyday wear.',
+                        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                    },
+                    {
+                        id: 'PROD-2',
+                        name: 'Running Shoes',
+                        category: 'Footwear',
+                        price: 89.99,
+                        stock: 50,
+                        description: 'Lightweight running shoes with excellent support.',
+                        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                    },
+                    {
+                        id: 'PROD-3',
+                        name: 'Sunglasses',
+                        category: 'Accessories',
+                        price: 79.99,
+                        stock: 30,
+                        description: 'Stylish sunglasses with UV protection.',
+                        image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
+                    }
+                ];
+                
+                localStorage.setItem('products', JSON.stringify(demoProducts));
+            }
+        }
+        
+        // Load job requests
+        function loadJobRequests() {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            displayJobRequests(jobRequests.reverse(), 'job-requests-table');
+        }
+
+        // Display job requests in a table
+        function displayJobRequests(jobRequests, tableId) {
+            const jobRequestsTable = document.getElementById(tableId);
+            
+            if (jobRequests.length === 0) {
+                jobRequestsTable.innerHTML = '<tr><td colspan="8" style="text-align: center;">No job applications found</td></tr>';
+                return;
+            }
+            
+            jobRequestsTable.innerHTML = jobRequests.map(request => `
+                <tr>
+                    <td>${request.fullName}</td>
+                    <td>${request.email}</td>
+                    <td>${request.phone}</td>
+                    <td><span class="badge badge-primary">${request.jobType}</span></td>
+                    <td>${request.experience} years</td>
+                    <td>${new Date(request.date).toLocaleDateString()}</td>
+                    <td><span class="status status-${request.status.toLowerCase()}">${request.status}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="viewJobRequest('${request.email}')">View</button>
+                        <button class="action-btn" style="background-color: #4caf50; color: white;" onclick="acceptJobRequest('${request.email}')">Accept</button>
+                        <button class="action-btn" style="background-color: #f44336; color: white;" onclick="rejectJobRequest('${request.email}')">Reject</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter job requests by status
+        function filterJobRequests(status) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            
+            // Update active tab
+            document.querySelectorAll('#job-requests-tab .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (status === 'all') {
+                displayJobRequests(jobRequests.reverse(), 'job-requests-table');
+            } else {
+                const filteredRequests = jobRequests.filter(request => request.status === status);
+                displayJobRequests(filteredRequests.reverse(), 'job-requests-table');
+            }
+        }
+
+        // View job request details
+        function viewJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const request = jobRequests.find(r => r.email === email);
+            
+            if (request) {
+                let responseInfo = '';
+                if (request.responseMessage) {
+                    responseInfo = `
+                    
+                    Your Response:
+                    Date: ${new Date(request.responseDate).toLocaleString()}
+                    Message: ${request.responseMessage}`;
+                }
+                
+                const requestDetails = `
+                    Name: ${request.fullName}
+                    Email: ${request.email}
+                    Phone: ${request.phone}
+                    Job Type: ${request.jobType}
+                    Experience: ${request.experience} years
+                    Status: ${request.status}
+                    Date Applied: ${new Date(request.date).toLocaleString()}
+                    
+                    Skills & Qualifications:
+                    ${request.skills}
+                    
+                    Additional Message:
+                    ${request.message || 'None provided'}${responseInfo}
+                `;
+                
+                alert(requestDetails);
+            }
+        }
+
+        // Accept job request
+        function acceptJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                
+                // Ask for a message for the applicant
+                const responseMessage = prompt(`Enter a message for the applicant:`, 
+                    'Congratulations! Your job application has been accepted. Please contact us to discuss next steps.');
+                
+                if (responseMessage !== null) {
+                    // Update job request status and message
+                    jobRequests[requestIndex].status = 'Accepted';
+                    jobRequests[requestIndex].responseMessage = responseMessage;
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: 'Your job application has been ACCEPTED!',
+                        message: responseMessage,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    
+                    // Reload job requests
+                    loadJobRequests();
+                    alert(`Job application for ${request.fullName} has been accepted.`);
+                }
+            }
+        }
+
+        // Reject job request
+        function rejectJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                
+                // Confirm rejection
+                if (!confirm(`Are you sure you want to reject ${request.fullName}'s application?`)) {
+                    return;
+                }
+                
+                // Ask for a message for the applicant
+                const responseMessage = prompt(`Enter a message for the applicant:`, 
+                    'Thank you for your interest. Unfortunately, your application was not selected at this time.');
+                
+                if (responseMessage !== null) {
+                    // Update job request status and message
+                    jobRequests[requestIndex].status = 'Rejected';
+                    jobRequests[requestIndex].responseMessage = responseMessage;
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: 'Status Update on Your Job Application',
+                        message: responseMessage,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    
+                    // Reload job requests
+                    loadJobRequests();
+                    alert(`Job application for ${request.fullName} has been rejected.`);
+                }
+            }
+        }
+        
+        // Update job request status (keeping for compatibility)
+        function updateJobRequestStatus(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                const currentStatus = request.status || 'Pending';
+                
+                // Create options for status
+                const statusOptions = ['Pending', 'Reviewing', 'Accepted', 'Rejected'];
+                let selectedStatus = currentStatus;
+                
+                // Allow custom status
+                const customStatus = prompt(`Update application status (current: ${currentStatus})\nOptions: Pending, Reviewing, Accepted, Rejected`, selectedStatus);
+                
+                if (customStatus) {
+                    // Ask for a message for the applicant if status is Accepted or Rejected
+                    let responseMessage = '';
+                    if (customStatus === 'Accepted' || customStatus === 'Rejected') {
+                        responseMessage = prompt(`Enter a message for the applicant:`, 
+                            customStatus === 'Accepted' ? 
+                            'Congratulations! Your job application has been accepted. Please contact us to discuss next steps.' : 
+                            'Thank you for your interest. Unfortunately, your application was not selected at this time.');
+                    }
+                    
+                    // Update job request status and message
+                    jobRequests[requestIndex].status = customStatus;
+                    jobRequests[requestIndex].responseMessage = responseMessage || '';
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: `Your job application status: ${customStatus}`,
+                        message: responseMessage || `Your application has been marked as ${customStatus}`,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    loadJobRequests();
+                }
+            }
+        }
+
+        // Initialize demo data
+        initializeDemoData();
+        
+        // Initialize job requests data if none exist
+        function initializeJobRequestsData() {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            
+            if (jobRequests.length === 0) {
+                const demoJobRequests = [
+                    {
+                        fullName: 'John Smith',
+                        email: 'john.smith@example.com',
+                        phone: '555-123-4567',
+                        jobType: 'Transporting',
+                        experience: '3',
+                        skills: 'Commercial driver license, 3+ years experience in logistics and transportation. Familiar with route planning and delivery management.',
+                        message: 'I am looking for a job in the transportation department.',
+                        date: '2023-06-15T10:30:00',
+                        status: 'Pending'
+                    },
+                    {
+                        fullName: 'Sarah Johnson',
+                        email: 'sarah.j@example.com',
+                        phone: '555-987-6543',
+                        jobType: 'Building',
+                        experience: '5',
+                        skills: 'Certified construction worker with experience in residential and commercial projects. Proficient in reading blueprints and operating heavy machinery.',
+                        message: 'I have extensive experience in building construction and would like to join your team.',
+                        date: '2023-06-10T14:20:00',
+                        status: 'Reviewing'
+                    }
+                ];
+                
+                localStorage.setItem('jobRequests', JSON.stringify(demoJobRequests));
+            }
+        }
+        
+        // Initialize job requests data
+        initializeJobRequestsData();
+        
+        // Add job requests tab to the loadData function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load all data
+            loadDashboardData();
+            loadProducts();
+            loadOrders();
+            loadCustomers();
+            loadJobRequests();
+        });
+    </script>
 </body>
 </html>

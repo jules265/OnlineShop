@@ -3,523 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegant Shopping Experience</title>
-    <link rel="icon" href="ep.png" type="image/png">
-    <link rel="stylesheet" href="index.css">
+    <title>Nora_tech_Company</title>
+    <style>
+        :root {
+            --primary: #4a4af4;
+            --primary-dark: #3939c7;
+            --secondary: #f472b6;
+            --text: #333;
+            --text-light: #666;
+            --background: #f5f5f5;
+            --white: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background-color: var(--background);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            margin-top: 6rem;
+            box-shadow: var(--shadow);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .primary-button {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .secondary-button {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .secondary-button:hover {
+            background-color: rgba(74, 74, 244, 0.1);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 3rem 0;
+            color: var(--text);
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="brand">
-            <span>StyleShop</span>
-        </div>
-        <nav>
-        
+    <header class="header">
+        <h1>Nora_tech_Company</h1>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="job-request.html">Jobs</a>
+            <a href="customer.html">Orders</a>
+            <a href="login.html">Login</a>
         </nav>
-        <div class="nav-cart">
-            <a href="customer.html" style="text-decoration: none; color: rgb(255, 255, 255); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; padding: 6px;background-color: rgb(65, 65, 197); border-radius: 5px;">Profile</a>
-            <button class="cart-button" id="cart-toggle">
-                🛒
-                <span id="cart-count">0</span>
-            </button>
-        </div>
     </header>
-    
-    <main>
-        <section>
-            <div class="section-title">
-                <h2>Best Sellers</h2>
-                <span class="badge badge-success">New Arrivals</span>
-            </div>
-            <div class="products" id="products-container">
-                <!-- Products will be dynamically inserted here -->
+
+    <div class="container">
+        <section class="hero">
+            <h1>Welcome to Nora_tech_Company</h1>
+            <p>Your one-stop solution for quality products and professional services in transportation and construction.</p>
+            <div class="cta-buttons">
+                <a href="shop.html" class="cta-button primary-button">Shop Now</a>
+                <a href="job-request.html" class="cta-button secondary-button">Job Opportunities</a>
             </div>
         </section>
-        
-        <section class="cart-container">
-            <div class="section-title">
-                <h3>Your Cart</h3>
+
+        <div class="section-title">
+            <h2>Our Services</h2>
+            <p>Discover what makes Nora_tech_Company the best choice for your needs</p>
+        </div>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🛒</div>
+                <h3>Quality Products</h3>
+                <p>Browse our wide range of high-quality products for all your needs.</p>
             </div>
-            <div id="cart-empty" class="cart-empty">
-                <p>Your cart is empty</p>
-                <p>Start shopping to add items to your cart</p>
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3>Transportation</h3>
+                <p>Professional transportation services for both individuals and businesses.</p>
             </div>
-            <ul id="cart-items" class="cart-items">
-                <!-- Cart items will be dynamically inserted here -->
-            </ul>
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Shipping</span>
-                    <span id="shipping">$0.00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tax</span>
-                    <span id="tax">$0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span id="total-price">$0.00</span>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏗️</div>
+                <h3>Construction</h3>
+                <p>Expert building services with a focus on quality and timeliness.</p>
             </div>
-            <button id="checkout-btn" class="checkout-btn" disabled>Proceed to Checkout</button>
         </section>
-    </main>
-    
-    <div id="toast" class="toast">
-        <span class="toast-icon">✓</span>
-        <span id="toast-message" class="toast-message"></span>
+
+        <div class="section-title">
+            <h2>Join Our Team</h2>
+            <p>Looking for a rewarding career? Apply to join our growing team today.</p>
+        </div>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">👷</div>
+                <h3>Construction Jobs</h3>
+                <p>Join our team of skilled builders and contribute to exciting projects.</p>
+                <br>
+                <a href="job-request.html" class="cta-button primary-button">Apply Now</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3>Transportation Jobs</h3>
+                <p>Become part of our transportation team and help deliver excellence.</p>
+                <br>
+                <a href="job-request.html" class="cta-button primary-button">Apply Now</a>
+            </div>
+        </section>
     </div>
-    
-    <script>
-        // Sample products data
-        const productsData = [
-            {
-                id: 1,
-                name: "Premium Leather Jacket",
-                price: 199.99,
-                description: "Genuine leather jacket with stylish design and comfortable fit.",
-                image: "PremiumLeatherJacket.jpg",
-                rating: 4.8,
-                stock: 15
-            },
-            {
-                id: 2,
-                name: "Designer Sunglasses",
-                price: 89.95,
-                description: "UV protection sunglasses with premium frame and polarized lenses.",
-                image: "Sunglasses.jpg",
-                rating: 4.5,
-                stock: 23
-            },
-            {
-                id: 3,
-                name: "Smart Watch Pro",
-                price: 249.00,
-                description: "Advanced smartwatch with health tracking and notification features.",
-                image: "SmartPro.jpg",
-                rating: 4.9,
-                stock: 8
-            },
-            {
-                id: 4,
-                name: "Wireless Earbuds",
-                price: 129.00,
-                description: "High-quality sound with noise cancellation and long battery life.",
-                image: "Wireless.jpg",
-                rating: 4.7,
-                stock: 20
-            },
-            {
-                id: 5,
-                name: "Canvas Backpack",
-                price: 59.95,
-                description: "Durable canvas backpack with multiple compartments and laptop sleeve.",
-                image: "Canvas.jpg",
-                rating: 4.4,
-                stock: 32
-            },
-            {
-                id: 6,
-                name: "Running Shoes",
-                price: 149.99,
-                description: "Lightweight, breathable running shoes with superior cushioning.",
-                image: "Running.jpg",
-                rating: 4.6,
-                stock: 18
-            },
-            {
-    id: 7,
-    name: "Wireless Headphones",
-    price: 129.95,
-    description: "Noise-cancelling wireless headphones with 30 hours of battery life and premium sound quality.",
-    image: "Headphones.jpg",
-    rating: 4.7,
-    stock: 24
-},
-{
-    id: 8,
-    name: "Stainless Steel Water Bottle",
-    price: 34.99,
-    description: "Double-walled insulated water bottle that keeps beverages cold for 24 hours or hot for 12 hours.",
-    image: "StainlessBottle.jpg",
-    rating: 4.8,
-    stock: 45
-},
-{
-    id: 9,
-    name: "Smart Fitness Tracker",
-    price: 89.95,
-    description: "Waterproof fitness tracker with heart rate monitoring, sleep analysis, and 7-day battery life.",
-    image: "SmartTracker.jpg",
-    rating: 4.3,
-    stock: 15
-},
-{
-    id: 10,
-    name: "Portable Bluetooth Speaker",
-    price: 79.99,
-    description: "Rugged, waterproof Bluetooth speaker with 360° sound and 20 hours of playtime.",
-    image: "BluetoothSpeaker.jpg",
-    rating: 4.5,
-    stock: 29
-},
-{
-    id: 10,
-    name: "Portable Bluetooth Speaker",
-    price: 79.99,
-    description: "Rugged, waterproof Bluetooth speaker with 360° sound and 20 hours of playtime.",
-    image: "BluetoothSpeaker.jpg",
-    rating: 4.5,
-    stock: 29
-}
 
-        ];
-        
-        // Cart state
-        let cart = [];
-        const TAX_RATE = 0.08;
-        const FREE_SHIPPING_THRESHOLD = 100;
-        const SHIPPING_COST = 10.00;
-        
-        // DOM elements
-        const productsContainer = document.getElementById('products-container');
-        const cartItemsContainer = document.getElementById('cart-items');
-        const cartEmptyMessage = document.getElementById('cart-empty');
-        const cartCountBadge = document.getElementById('cart-count');
-        const subtotalElement = document.getElementById('subtotal');
-        const shippingElement = document.getElementById('shipping');
-        const taxElement = document.getElementById('tax');
-        const totalElement = document.getElementById('total-price');
-        const checkoutButton = document.getElementById('checkout-btn');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        
-        // Initialize the app
-        function initApp() {
-            loadProducts();
-            loadCartFromStorage();
-            updateCartUI();
-        }
-        
-        // Load products into the DOM
-        function loadProducts() {
-            productsContainer.innerHTML = '';
-            
-            productsData.forEach(product => {
-                const productElement = document.createElement('div');
-                productElement.className = 'product';
-                productElement.dataset.id = product.id;
-                
-                const starsHTML = generateStarRating(product.rating);
-                
-                productElement.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="product-image">
-                    <div class="product-details">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
-                        <div class="product-rating">${starsHTML} <span>(${product.rating})</span></div>
-                        <p class="product-description">${product.description}</p>
-                        <div class="product-actions">
-                            <button class="btn btn-primary add-to-cart-btn" data-id="${product.id}">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                productsContainer.appendChild(productElement);
-            });
-            
-            // Add event listeners to add-to-cart buttons
-            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = parseInt(this.dataset.id);
-                    addToCart(productId);
-                });
-            });
-        }
-        
-        // Generate star rating HTML
-        function generateStarRating(rating) {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5;
-            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-            
-            let starsHTML = '';
-            for (let i = 0; i < fullStars; i++) {
-                starsHTML += '★';
-            }
-            if (halfStar) {
-                starsHTML += '☆';
-            }
-            for (let i = 0; i < emptyStars; i++) {
-                starsHTML += '☆';
-            }
-            
-            return starsHTML;
-        }
-        
-        // Add a product to the cart
-        function addToCart(productId) {
-            const product = productsData.find(p => p.id === productId);
-            if (!product) return;
-            
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: 1
-                });
-            }
-            
-            saveCartToStorage();
-            updateCartUI();
-            showToast(`${product.name} added to cart`);
-        }
-        
-        // Remove an item from the cart
-        function removeFromCart(productId) {
-            const product = productsData.find(p => p.id === productId);
-            cart = cart.filter(item => item.id !== productId);
-            saveCartToStorage();
-            updateCartUI();
-            showToast(`${product.name} removed from cart`, 'danger');
-        }
-        
-        // Update item quantity in cart
-        function updateQuantity(productId, newQuantity) {
-            if (newQuantity < 1) return;
-            
-            const cartItem = cart.find(item => item.id === productId);
-            if (cartItem) {
-                cartItem.quantity = newQuantity;
-                saveCartToStorage();
-                updateCartUI();
-            }
-        }
-        
-        // Update the cart UI
-        function updateCartUI() {
-            // Update cart count
-            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-            cartCountBadge.textContent = totalItems;
-            
-            // Show/hide empty cart message
-            if (cart.length === 0) {
-                cartEmptyMessage.style.display = 'block';
-                cartItemsContainer.style.display = 'none';
-                checkoutButton.disabled = true;
-            } else {
-                cartEmptyMessage.style.display = 'none';
-                cartItemsContainer.style.display = 'block';
-                checkoutButton.disabled = false;
-            }
-            
-            // Update cart items
-            cartItemsContainer.innerHTML = '';
-            cart.forEach(item => {
-                const cartItemElement = document.createElement('li');
-                cartItemElement.className = 'cart-item';
-                cartItemElement.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.name}</div>
-                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
-                        <div class="cart-item-actions">
-                            <div class="quantity-control">
-                                <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
-                                <input type="number" min="1" value="${item.quantity}" class="quantity-input" data-id="${item.id}">
-                                <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
-                            </div>
-                            <button class="btn btn-outline remove-btn" data-id="${item.id}">×</button>
-                        </div>
-                    </div>
-                `;
-                
-                cartItemsContainer.appendChild(cartItemElement);
-            });
-            
-            // Add event listeners to cart item buttons
-            document.querySelectorAll('.remove-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = parseInt(this.dataset.id);
-                    removeFromCart(productId);
-                });
-            });
-            
-            document.querySelectorAll('.decrease-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = parseInt(this.dataset.id);
-                    const item = cart.find(item => item.id === productId);
-                    if (item && item.quantity > 1) {
-                        updateQuantity(productId, item.quantity - 1);
-                    } else {
-                        removeFromCart(productId);
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.increase-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = parseInt(this.dataset.id);
-                    const item = cart.find(item => item.id === productId);
-                    if (item) {
-                        updateQuantity(productId, item.quantity + 1);
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                input.addEventListener('change', function() {
-                    const productId = parseInt(this.dataset.id);
-                    const newQuantity = parseInt(this.value);
-                    if (newQuantity >= 1) {
-                        updateQuantity(productId, newQuantity);
-                    } else {
-                        this.value = 1;
-                        updateQuantity(productId, 1);
-                    }
-                });
-            });
-            
-            // Update cart summary
-            updateCartSummary();
-        }
-        
-        // Update cart summary calculations
-        function updateCartSummary() {
-            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
-            const tax = subtotal * TAX_RATE;
-            const total = subtotal + shipping + tax;
-            
-            subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-            shippingElement.textContent = shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`;
-            taxElement.textContent = `$${tax.toFixed(2)}`;
-            totalElement.textContent = `$${total.toFixed(2)}`;
-        }
-        
-        // Save cart to local storage
-        function saveCartToStorage() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-        
-        // Load cart from local storage
-        function loadCartFromStorage() {
-            const savedCart = localStorage.getItem('cart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-            }
-        }
-        
-        // Show toast notification
-        function showToast(message, type = 'success') {
-            toastMessage.textContent = message;
-            toast.className = `toast show toast-${type}`;
-            
-            setTimeout(() => {
-                toast.className = 'toast';
-            }, 3000);
-        }
-        
-        // Handle checkout
-        document.getElementById('checkout-btn').addEventListener('click', function() {
-            if (cart.length === 0) return;
-            
-            // In a real app, this would navigate to a checkout page or open a checkout modal
-            showToast('Proceeding to checkout...');
-            
-            // For demo purposes, clear the cart after a delay
-            setTimeout(() => {
-                cart = [];
-                saveCartToStorage();
-                updateCartUI();
-                showToast('Order placed successfully!');
-                window.location.href = 'customer.html';
-            }, 1500);
-        });
-        
-        // Initialize the application
-        initApp();
-    </script>
-    
-    <script>
-        // Check if the user is logged in
-        document.addEventListener("DOMContentLoaded", function () {
-            const user = JSON.parse(localStorage.getItem("user"));
-    
-            if (!user) {
-                // Redirect to login page if not logged in
-                window.location.href = "login.html";
-            }
-        });
-        
-        // Handle checkout
-document.getElementById('checkout-btn').addEventListener('click', function () {
-    if (cart.length === 0) return;
-    
-    // In a real app, this would navigate to a checkout page or open a checkout modal
-    showToast('Proceeding to checkout...');
-    
-    // Store orders in local storage
-    const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
-    
-    const newOrder = {
-        id: `#ORD-${Math.floor(Math.random() * 100000)}`, // Generate a random order ID
-        date: new Date().toLocaleDateString(), // Format today's date
-        items: cart, // Store the cart items
-        total: calculateTotal() // Calculate the total price
-    };
-    
-    // Add new order to the existing orders array
-    existingOrders.push(newOrder);
-    localStorage.setItem('orders', JSON.stringify(existingOrders));
-
-    // For demo purposes, clear the cart after a delay
-    setTimeout(() => {
-        cart = [];
-        saveCartToStorage();
-        updateCartUI();
-        showToast('Order placed successfully!');
-        window.location.href = 'customer.html';
-    }, 1500);
-});
-
-// Function to calculate total price
-function calculateTotal() {
-    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_COST;
-    const tax = subtotal * TAX_RATE;
-    const total = subtotal + shipping + tax;
-    return total.toFixed(2);
-}
-
-
-function placeOrder(order) {
-    const user = JSON.parse(localStorage.getItem("user"));
-    let orders = JSON.parse(localStorage.getItem("orders")) || {};
-    
-    // If there are no orders for this user yet, initialize as an empty array
-    if (!orders[user.id]) {
-        orders[user.id] = [];
-    }
-    
-    // Push the new order to the user's orders
-    orders[user.id].push(order);
-    
-    // Save the updated orders back to local storage
-    localStorage.setItem("orders", JSON.stringify(orders));
-}
-    </script>
-    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Nora_tech_Company</h3>
+                <p>Your trusted partner for quality products and services.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="job-request.html">Careers</a></li>
+                    <li><a href="customer.html">My Orders</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li>Email: info@noratech.com</li>
+                    <li>Phone: +1 (555) 123-4567</li>
+                    <li>Address: 123 Tech Street, City, Country</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Nora_tech_Company. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,1 @@
+[{"id":"ORD-123456","date":"2023-11-15T10:30:00","status":"Delivered","items":[{"id":"p1","name":"Classic T-Shirt","price":24.99,"quantity":2,"image":"https://placehold.co/100x100?text=Tshirt"}],"customer":{"name":"Demo User","email":"user@example.com"},"subtotal":49.98,"tax":5.00,"shipping":4.99,"total":59.97,"paymentMethod":"Credit Card"}]
