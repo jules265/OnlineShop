@@ -382,6 +382,14 @@
                         </div>
                     </div>
                     
+                    <div id="momo-pay-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="momoPhoneNumber">MTN MoMo Phone Number</label>
+                            <input type="tel" id="momoPhoneNumber" placeholder="07XX XXX XXX">
+                            <small>Enter the phone number registered with MTN Mobile Money</small>
+                        </div>
+                    </div>
+                    
                     <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
                 </div>
             </div>
@@ -589,14 +597,18 @@
             
             // Show/hide relevant payment forms
             const creditCardForm = document.getElementById('credit-card-form');
+            const momoPayForm = document.getElementById('momo-pay-form');
             
             if (method === 'credit-card') {
                 creditCardForm.style.display = 'block';
+                momoPayForm.style.display = 'none';
             } else if (method === 'momo-pay') {
                 creditCardForm.style.display = 'none';
-                showToast("MoMo Pay selected. You will receive a payment prompt on your registered phone.", "info");
+                momoPayForm.style.display = 'block';
+                showToast("Please enter your MoMo Pay phone number.", "info");
             } else {
                 creditCardForm.style.display = 'none';
+                momoPayForm.style.display = 'none';
             }
         }
 
@@ -640,11 +652,18 @@
             
             // Handle MoMo Pay for Rwanda
             if (country === 'RW' && paymentMethod === 'MoMo Pay') {
+                const momoPhoneNumber = document.getElementById('momoPhoneNumber').value.trim();
+                
+                if (!momoPhoneNumber) {
+                    showToast('Please enter your MoMo Pay phone number', 'error');
+                    return;
+                }
+                
                 showToast('Processing MoMo Pay transaction. Please check your phone for confirmation.', 'info');
                 
                 // Simulate MoMo Pay processing delay
                 setTimeout(() => {
-                    completeOrder(fullName, email, phone, address, city, zipCode, country, cartItems, subtotal, tax, shipping, total, paymentMethod);
+                    completeOrder(fullName, email, momoPhoneNumber, address, city, zipCode, country, cartItems, subtotal, tax, shipping, total, paymentMethod);
                 }, 2000);
             } else {
                 completeOrder(fullName, email, phone, address, city, zipCode, country, cartItems, subtotal, tax, shipping, total, paymentMethod);
