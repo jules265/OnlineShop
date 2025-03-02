@@ -449,6 +449,59 @@
         .social-login button {
             margin-top: 10px;
         }
+        
+        .account-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        .account-type-option {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--bg-light);
+        }
+        
+        .account-type-option i {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .account-type-option span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .account-type-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        
+        .account-type-option.selected i {
+            color: var(--primary);
+        }
+        
+        .admin-login-info {
+            margin-top: 16px;
+            padding: 10px;
+            background-color: rgba(79, 70, 229, 0.05);
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: none;
+        }
+        
+        .admin-login-info.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -491,6 +544,30 @@
                         <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
                         <div id="passwordFeedback" class="input-feedback"></div>
                     </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Account Type</label>
+                    <div class="account-type-selector">
+                        <div class="account-type-option" onclick="selectAccountType(this, 'client')">
+                            <i class="fas fa-user"></i>
+                            <span>Client Account</span>
+                        </div>
+                        <div class="account-type-option" onclick="selectAccountType(this, 'admin')">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin Account</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="accountType" value="client">
+                </div>
+                
+                <div id="adminLoginInfo" class="admin-login-info">
+                    <strong>Admin Accounts:</strong>
+                    <ul style="margin-top: 5px; padding-left: 15px;">
+                        <li>Email: nzizajules202@gmail.com</li>
+                        <li>Email: imanzilutfy@gmail.com</li>
+                        <li>Password: 123456@jules</li>
+                    </ul>
                 </div>
                 
                 <button type="submit" id="loginButton">
@@ -673,14 +750,75 @@
             }
         }
         
+        // Account type selection
+        function selectAccountType(element, type) {
+            // Remove selected class from all options
+            document.querySelectorAll('.account-type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Set account type value
+            document.getElementById('accountType').value = type;
+            
+            // Show admin credentials info if admin is selected
+            const adminLoginInfo = document.getElementById('adminLoginInfo');
+            if (type === 'admin') {
+                adminLoginInfo.classList.add('show');
+            } else {
+                adminLoginInfo.classList.remove('show');
+            }
+        }
+        
         // Login functionality
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const accountType = document.getElementById('accountType').value;
             const emailFeedback = document.getElementById('emailFeedback');
             const passwordFeedback = document.getElementById('passwordFeedback');
+            
+            // Check if trying to login as admin
+            if (accountType === 'admin') {
+                // Verify admin credentials
+                const adminCredentials = [
+                    { email: 'nzizajules202@gmail.com', password: '123456@jules' },
+                    { email: 'imanzilutfy@gmail.com', password: '123456@jules' }
+                ];
+                
+                const isAdmin = adminCredentials.some(admin => 
+                    admin.email === email && admin.password === password
+                );
+                
+                if (isAdmin) {
+                    // Store admin user info
+                    localStorage.setItem("user", JSON.stringify({
+                        id: 'admin-' + new Date().getTime(),
+                        email: email,
+                        name: 'Admin',
+                        role: 'admin',
+                        lastLogin: new Date().toISOString()
+                    }));
+                    
+                    showToast('success', 'Admin Login Successful', 'Welcome back, Admin!');
+                    
+                    // Redirect to admin page
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 1000);
+                    return;
+                } else {
+                    // Invalid admin credentials
+                    emailFeedback.textContent = 'Invalid admin credentials';
+                    emailFeedback.className = 'input-feedback error';
+                    showToast('error', 'Admin Login Failed', 'Invalid admin email or password.');
+                    return;
+                }
+            }
             
             // Clear previous feedback
             emailFeedback.textContent = '';
