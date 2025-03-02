@@ -1134,6 +1134,15 @@
             const request = jobRequests.find(r => r.email === email);
             
             if (request) {
+                let responseInfo = '';
+                if (request.responseMessage) {
+                    responseInfo = `
+                    
+                    Your Response:
+                    Date: ${new Date(request.responseDate).toLocaleString()}
+                    Message: ${request.responseMessage}`;
+                }
+                
                 const requestDetails = `
                     Name: ${request.fullName}
                     Email: ${request.email}
@@ -1147,7 +1156,7 @@
                     ${request.skills}
                     
                     Additional Message:
-                    ${request.message || 'None provided'}
+                    ${request.message || 'None provided'}${responseInfo}
                 `;
                 
                 alert(requestDetails);
@@ -1163,26 +1172,43 @@
                 const request = jobRequests[requestIndex];
                 const currentStatus = request.status || 'Pending';
                 
-                let newStatus;
-                switch (currentStatus) {
-                    case 'Pending':
-                        newStatus = 'Reviewing';
-                        break;
-                    case 'Reviewing':
-                        newStatus = 'Accepted';
-                        break;
-                    case 'Accepted':
-                        newStatus = 'Pending';
-                        break;
-                    default:
-                        newStatus = 'Pending';
-                }
+                // Create options for status
+                const statusOptions = ['Pending', 'Reviewing', 'Accepted', 'Rejected'];
+                let selectedStatus = currentStatus;
                 
                 // Allow custom status
-                const customStatus = prompt(`Update application status (current: ${currentStatus})`, newStatus);
+                const customStatus = prompt(`Update application status (current: ${currentStatus})\nOptions: Pending, Reviewing, Accepted, Rejected`, selectedStatus);
+                
                 if (customStatus) {
+                    // Ask for a message for the applicant if status is Accepted or Rejected
+                    let responseMessage = '';
+                    if (customStatus === 'Accepted' || customStatus === 'Rejected') {
+                        responseMessage = prompt(`Enter a message for the applicant:`, 
+                            customStatus === 'Accepted' ? 
+                            'Congratulations! Your job application has been accepted. Please contact us to discuss next steps.' : 
+                            'Thank you for your interest. Unfortunately, your application was not selected at this time.');
+                    }
+                    
+                    // Update job request status and message
                     jobRequests[requestIndex].status = customStatus;
+                    jobRequests[requestIndex].responseMessage = responseMessage || '';
+                    jobRequests[requestIndex].responseDate = new Date().toISOString();
+                    
+                    // Save notification to user's notifications
+                    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                    notifications.push({
+                        id: 'notif-' + Date.now(),
+                        userId: request.email,
+                        type: 'job_response',
+                        title: `Your job application status: ${customStatus}`,
+                        message: responseMessage || `Your application has been marked as ${customStatus}`,
+                        date: new Date().toISOString(),
+                        read: false,
+                        jobType: request.jobType
+                    });
+                    
                     localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    localStorage.setItem('notifications', JSON.stringify(notifications));
                     loadJobRequests();
                 }
             }

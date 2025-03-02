@@ -311,13 +311,33 @@
                 skills: document.getElementById('skills').value,
                 message: document.getElementById('message').value,
                 date: new Date().toISOString(),
-                status: 'Pending'
+                status: 'Pending',
+                responseMessage: '',
+                responseDate: ''
             };
             
             // Save job request to localStorage
             const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
             jobRequests.push(jobRequest);
             localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+            
+            // Initialize notifications array if it doesn't exist
+            if (!localStorage.getItem('notifications')) {
+                localStorage.setItem('notifications', JSON.stringify([]));
+            }
+            
+            // Add notification for admin
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            notifications.push({
+                id: 'notif-' + Date.now(),
+                userId: 'admin', // Special ID for admin notifications
+                type: 'new_job_request',
+                title: 'New Job Application',
+                message: `${jobRequest.fullName} has applied for a ${jobRequest.jobType} position.`,
+                date: new Date().toISOString(),
+                read: false
+            });
+            localStorage.setItem('notifications', JSON.stringify(notifications));
             
             // Reset form
             document.getElementById('job-request-form').reset();
