@@ -383,6 +383,11 @@
                 </a>
             </li>
             <li class="sidebar-nav-item">
+                <a href="#job-requests" class="sidebar-nav-link" onclick="showTab('job-requests')">
+                    <span>Job Requests</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
                 <a href="shop.html" class="sidebar-nav-link">
                     <span>View Shop</span>
                 </a>
@@ -492,6 +497,10 @@
                                 <option value="Clothing">Clothing</option>
                                 <option value="Footwear">Footwear</option>
                                 <option value="Accessories">Accessories</option>
+                                <option value="Transporting">Transporting</option>
+                                <option value="Building">Building</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Home">Home & Garden</option>
                             </select>
                         </div>
                         
@@ -582,6 +591,44 @@
                             </thead>
                             <tbody id="customers-table">
                                 <!-- Customers will be displayed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Requests Tab -->
+        <div id="job-requests-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Job Applications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" onclick="filterJobRequests('all')">All</div>
+                        <div class="tab" onclick="filterJobRequests('Pending')">Pending</div>
+                        <div class="tab" onclick="filterJobRequests('Reviewing')">Reviewing</div>
+                        <div class="tab" onclick="filterJobRequests('Accepted')">Accepted</div>
+                        <div class="tab" onclick="filterJobRequests('Rejected')">Rejected</div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Job Type</th>
+                                    <th>Experience</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="job-requests-table">
+                                <!-- Job requests will be displayed here -->
                             </tbody>
                         </table>
                     </div>
@@ -1031,8 +1078,165 @@
             }
         }
         
+        // Load job requests
+        function loadJobRequests() {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            displayJobRequests(jobRequests.reverse(), 'job-requests-table');
+        }
+
+        // Display job requests in a table
+        function displayJobRequests(jobRequests, tableId) {
+            const jobRequestsTable = document.getElementById(tableId);
+            
+            if (jobRequests.length === 0) {
+                jobRequestsTable.innerHTML = '<tr><td colspan="8" style="text-align: center;">No job applications found</td></tr>';
+                return;
+            }
+            
+            jobRequestsTable.innerHTML = jobRequests.map(request => `
+                <tr>
+                    <td>${request.fullName}</td>
+                    <td>${request.email}</td>
+                    <td>${request.phone}</td>
+                    <td><span class="badge badge-primary">${request.jobType}</span></td>
+                    <td>${request.experience} years</td>
+                    <td>${new Date(request.date).toLocaleDateString()}</td>
+                    <td><span class="status status-${request.status.toLowerCase()}">${request.status}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="viewJobRequest('${request.email}')">View</button>
+                        <button class="action-btn" onclick="updateJobRequestStatus('${request.email}')">Update</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter job requests by status
+        function filterJobRequests(status) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            
+            // Update active tab
+            document.querySelectorAll('#job-requests-tab .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (status === 'all') {
+                displayJobRequests(jobRequests.reverse(), 'job-requests-table');
+            } else {
+                const filteredRequests = jobRequests.filter(request => request.status === status);
+                displayJobRequests(filteredRequests.reverse(), 'job-requests-table');
+            }
+        }
+
+        // View job request details
+        function viewJobRequest(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const request = jobRequests.find(r => r.email === email);
+            
+            if (request) {
+                const requestDetails = `
+                    Name: ${request.fullName}
+                    Email: ${request.email}
+                    Phone: ${request.phone}
+                    Job Type: ${request.jobType}
+                    Experience: ${request.experience} years
+                    Status: ${request.status}
+                    Date Applied: ${new Date(request.date).toLocaleString()}
+                    
+                    Skills & Qualifications:
+                    ${request.skills}
+                    
+                    Additional Message:
+                    ${request.message || 'None provided'}
+                `;
+                
+                alert(requestDetails);
+            }
+        }
+
+        // Update job request status
+        function updateJobRequestStatus(email) {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            const requestIndex = jobRequests.findIndex(r => r.email === email);
+            
+            if (requestIndex !== -1) {
+                const request = jobRequests[requestIndex];
+                const currentStatus = request.status || 'Pending';
+                
+                let newStatus;
+                switch (currentStatus) {
+                    case 'Pending':
+                        newStatus = 'Reviewing';
+                        break;
+                    case 'Reviewing':
+                        newStatus = 'Accepted';
+                        break;
+                    case 'Accepted':
+                        newStatus = 'Pending';
+                        break;
+                    default:
+                        newStatus = 'Pending';
+                }
+                
+                // Allow custom status
+                const customStatus = prompt(`Update application status (current: ${currentStatus})`, newStatus);
+                if (customStatus) {
+                    jobRequests[requestIndex].status = customStatus;
+                    localStorage.setItem('jobRequests', JSON.stringify(jobRequests));
+                    loadJobRequests();
+                }
+            }
+        }
+
         // Initialize demo data
         initializeDemoData();
+        
+        // Initialize job requests data if none exist
+        function initializeJobRequestsData() {
+            const jobRequests = JSON.parse(localStorage.getItem('jobRequests') || '[]');
+            
+            if (jobRequests.length === 0) {
+                const demoJobRequests = [
+                    {
+                        fullName: 'John Smith',
+                        email: 'john.smith@example.com',
+                        phone: '555-123-4567',
+                        jobType: 'Transporting',
+                        experience: '3',
+                        skills: 'Commercial driver license, 3+ years experience in logistics and transportation. Familiar with route planning and delivery management.',
+                        message: 'I am looking for a job in the transportation department.',
+                        date: '2023-06-15T10:30:00',
+                        status: 'Pending'
+                    },
+                    {
+                        fullName: 'Sarah Johnson',
+                        email: 'sarah.j@example.com',
+                        phone: '555-987-6543',
+                        jobType: 'Building',
+                        experience: '5',
+                        skills: 'Certified construction worker with experience in residential and commercial projects. Proficient in reading blueprints and operating heavy machinery.',
+                        message: 'I have extensive experience in building construction and would like to join your team.',
+                        date: '2023-06-10T14:20:00',
+                        status: 'Reviewing'
+                    }
+                ];
+                
+                localStorage.setItem('jobRequests', JSON.stringify(demoJobRequests));
+            }
+        }
+        
+        // Initialize job requests data
+        initializeJobRequestsData();
+        
+        // Add job requests tab to the loadData function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load all data
+            loadDashboardData();
+            loadProducts();
+            loadOrders();
+            loadCustomers();
+            loadJobRequests();
+        });
     </script>
 </body>
 </html>

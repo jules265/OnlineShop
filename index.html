@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nora_tech_Company - Technology Solutions</title>
+    <title>Nora_tech_Company</title>
     <style>
         :root {
             --primary: #4a4af4;
@@ -69,84 +69,108 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .nav-links .cta-button {
-            background-color: var(--white);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .nav-links .cta-button:hover {
-            background-color: rgba(255, 255, 255, 0.9);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
         .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                        url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             text-align: center;
-            color: var(--white);
-            padding: 0 1rem;
+            padding: 5rem 1rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            margin-top: 6rem;
+            box-shadow: var(--shadow);
         }
 
-        .hero-content {
-            max-width: 800px;
-        }
-
-        .hero h2 {
+        .hero h1 {
             font-size: 3rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
         }
 
         .hero p {
             font-size: 1.2rem;
-            margin-bottom: 2rem;
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto 2rem;
         }
 
-        .button {
-            display: inline-block;
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 0.8rem 2rem;
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 0.75rem 1.5rem;
             border-radius: 4px;
             font-weight: 600;
-            transition: background-color 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        .button:hover {
+        .primary-button {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .primary-button:hover {
             background-color: var(--primary-dark);
         }
 
-        .button.secondary {
+        .secondary-button {
             background-color: transparent;
-            border: 2px solid var(--white);
-            margin-left: 1rem;
+            color: var(--primary);
+            border: 2px solid var(--primary);
         }
 
-        .button.secondary:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+        .secondary-button:hover {
+            background-color: rgba(74, 74, 244, 0.1);
         }
 
-        .section {
-            padding: 5rem 2rem;
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin: 3rem 0;
+            color: var(--text);
         }
 
-        .section-title h3 {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        .section-title h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
         }
 
         .section-title p {
@@ -155,283 +179,69 @@
             margin: 0 auto;
         }
 
-        .featured-categories {
-            background-color: var(--white);
-        }
-
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .category-card {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-
-        .category-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .category-image {
-            height: 250px;
-            width: 100%;
-            object-fit: cover;
-        }
-
-        .category-info {
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .category-info h4 {
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .category-info p {
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        .category-info .button {
-            background-color: var(--primary);
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .popular-products {
-            background-color: var(--background);
-        }
-
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .product-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .product-image {
-            height: 200px;
-            width: 100%;
-            object-fit: cover;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-info h4 {
-            margin-bottom: 0.5rem;
-        }
-
-        .product-price {
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .product-info .button {
-            width: 100%;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .testimonials {
-            background-color: var(--white);
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .testimonial-card {
-            background-color: var(--background);
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-
-        .testimonial-content {
-            margin-bottom: 1.5rem;
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-        }
-
-        .author-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 1rem;
-        }
-
-        .author-info h5 {
-            margin-bottom: 0.25rem;
-        }
-
-        .author-info p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .cta-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                        url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            color: var(--white);
-            text-align: center;
-            padding: 5rem 2rem;
-        }
-
-        .cta-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .cta-content h3 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .cta-content p {
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
         .footer {
-            background-color: #222;
+            background-color: var(--primary);
             color: var(--white);
             padding: 3rem 2rem;
+            margin-top: 4rem;
         }
 
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .footer-column h4 {
-            color: var(--white);
+        .footer-column h3 {
             margin-bottom: 1.5rem;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
-        .footer-column ul {
+        .footer-links {
             list-style: none;
         }
 
-        .footer-column ul li {
-            margin-bottom: 0.75rem;
+        .footer-links li {
+            margin-bottom: 0.8rem;
         }
 
-        .footer-column ul li a {
-            color: #aaa;
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
             transition: color 0.3s;
         }
 
-        .footer-column ul li a:hover {
+        .footer-links a:hover {
             color: var(--white);
         }
 
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background-color: #333;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s;
-        }
-
-        .social-links a:hover {
-            background-color: var(--primary);
-        }
-
-        .copyright {
+        .footer-bottom {
             text-align: center;
             padding-top: 2rem;
-            color: #aaa;
-            border-top: 1px solid #333;
             margin-top: 2rem;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         @media (max-width: 768px) {
-            .hero h2 {
-                font-size: 2rem;
+            .hero h1 {
+                font-size: 2.2rem;
             }
 
-            .button.secondary {
-                margin-left: 0;
-                margin-top: 1rem;
-                display: block;
+            .hero p {
+                font-size: 1rem;
             }
 
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                width: 100%;
-                background-color: var(--primary);
+            .cta-buttons {
                 flex-direction: column;
-                padding: 1rem;
-                gap: 0.5rem;
-                transform: translateY(-150%);
-                transition: transform 0.3s;
+                align-items: center;
             }
 
-            .nav-links.active {
-                transform: translateY(0);
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
             }
         }
     </style>
@@ -439,217 +249,98 @@
 <body>
     <header class="header">
         <h1>Nora_tech_Company</h1>
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        <nav class="nav-links" id="navLinks">
-            <a href="#featured">Categories</a>
-            <a href="#products">Products</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="login.html" class="cta-button">Login / Sign Up</a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="job-request.html">Jobs</a>
+            <a href="customer.html">Orders</a>
+            <a href="login.html">Login</a>
         </nav>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h2>Discover Your Style, Embrace Your Uniqueness</h2>
-            <p>Shop the latest trends in fashion, footwear, and accessories. Quality products at affordable prices.</p>
-            <div>
-                <a href="login.html" class="button">Shop Now</a>
-                <a href="#featured" class="button secondary">Learn More</a>
+    <div class="container">
+        <section class="hero">
+            <h1>Welcome to Nora_tech_Company</h1>
+            <p>Your one-stop solution for quality products and professional services in transportation and construction.</p>
+            <div class="cta-buttons">
+                <a href="shop.html" class="cta-button primary-button">Shop Now</a>
+                <a href="job-request.html" class="cta-button secondary-button">Job Opportunities</a>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section featured-categories" id="featured">
         <div class="section-title">
-            <h3>Featured Categories</h3>
-            <p>Browse our most popular categories and find exactly what you're looking for.</p>
+            <h2>Our Services</h2>
+            <p>Discover what makes Nora_tech_Company the best choice for your needs</p>
         </div>
-        <div class="categories">
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Clothing" class="category-image">
-                <div class="category-info">
-                    <h4>Clothing</h4>
-                    <p>Trendy outfits for every occasion</p>
-                    <a href="login.html" class="button">Shop Now</a>
-                </div>
-            </div>
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Footwear" class="category-image">
-                <div class="category-info">
-                    <h4>Footwear</h4>
-                    <p>Comfortable and stylish shoes</p>
-                    <a href="login.html" class="button">Shop Now</a>
-                </div>
-            </div>
-            <div class="category-card">
-                <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Accessories" class="category-image">
-                <div class="category-info">
-                    <h4>Accessories</h4>
-                    <p>Complete your look with our accessories</p>
-                    <a href="login.html" class="button">Shop Now</a>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="section popular-products" id="products">
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🛒</div>
+                <h3>Quality Products</h3>
+                <p>Browse our wide range of high-quality products for all your needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3>Transportation</h3>
+                <p>Professional transportation services for both individuals and businesses.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏗️</div>
+                <h3>Construction</h3>
+                <p>Expert building services with a focus on quality and timeliness.</p>
+            </div>
+        </section>
+
         <div class="section-title">
-            <h3>Popular Products</h3>
-            <p>Our best-selling products that customers love. Quality and style guaranteed.</p>
+            <h2>Join Our Team</h2>
+            <p>Looking for a rewarding career? Apply to join our growing team today.</p>
         </div>
-        <div class="products">
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="T-Shirt" class="product-image">
-                <div class="product-info">
-                    <h4>Classic T-Shirt</h4>
-                    <p class="product-price">$24.99</p>
-                    <a href="login.html" class="button">View Product</a>
-                </div>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Running Shoes" class="product-image">
-                <div class="product-info">
-                    <h4>Running Shoes</h4>
-                    <p class="product-price">$89.99</p>
-                    <a href="login.html" class="button">View Product</a>
-                </div>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Sunglasses" class="product-image">
-                <div class="product-info">
-                    <h4>Sunglasses</h4>
-                    <p class="product-price">$79.99</p>
-                    <a href="login.html" class="button">View Product</a>
-                </div>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Summer Dress" class="product-image">
-                <div class="product-info">
-                    <h4>Summer Dress</h4>
-                    <p class="product-price">$59.99</p>
-                    <a href="login.html" class="button">View Product</a>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="section testimonials" id="testimonials">
-        <div class="section-title">
-            <h3>Customer Testimonials</h3>
-            <p>See what our satisfied customers have to say about their shopping experience.</p>
-        </div>
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <p class="testimonial-content">"The clothes I ordered were exactly as described. Great quality and very comfortable. Will definitely shop here again!"</p>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Emily Johnson" class="author-image">
-                    <div class="author-info">
-                        <h5>Emily Johnson</h5>
-                        <p>Regular Customer</p>
-                    </div>
-                </div>
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">👷</div>
+                <h3>Construction Jobs</h3>
+                <p>Join our team of skilled builders and contribute to exciting projects.</p>
+                <br>
+                <a href="job-request.html" class="cta-button primary-button">Apply Now</a>
             </div>
-            <div class="testimonial-card">
-                <p class="testimonial-content">"Fast shipping and excellent customer service. The team was very helpful when I needed to exchange a size. Highly recommend!"</p>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Roberts" class="author-image">
-                    <div class="author-info">
-                        <h5>Michael Roberts</h5>
-                        <p>New Customer</p>
-                    </div>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3>Transportation Jobs</h3>
+                <p>Become part of our transportation team and help deliver excellence.</p>
+                <br>
+                <a href="job-request.html" class="cta-button primary-button">Apply Now</a>
             </div>
-            <div class="testimonial-card">
-                <p class="testimonial-content">"I love the variety of products available. Everything is so stylish and trendy. StyleShop has become my go-to online store!"</p>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Sarah Williams" class="author-image">
-                    <div class="author-info">
-                        <h5>Sarah Williams</h5>
-                        <p>Loyal Customer</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-section">
-        <div class="cta-content">
-            <h3>Ready to Upgrade Your Wardrobe?</h3>
-            <p>Join thousands of satisfied customers who have discovered their style with us. Sign up now and get 10% off your first order!</p>
-            <a href="login.html" class="button">Shop Now</a>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-column">
-                <h4>Nora_tech_Company</h4>
-                <p>Your leading technology solutions provider. We bring you innovative products and services at competitive prices.</p>
-                <div class="social-links">
-                    <a href="#">FB</a>
-                    <a href="#">IG</a>
-                    <a href="#">TW</a>
-                    <a href="#">PT</a>
-                </div>
+                <h3>Nora_tech_Company</h3>
+                <p>Your trusted partner for quality products and services.</p>
             </div>
             <div class="footer-column">
-                <h4>Shop</h4>
-                <ul>
-                    <li><a href="login.html">Clothing</a></li>
-                    <li><a href="login.html">Footwear</a></li>
-                    <li><a href="login.html">Accessories</a></li>
-                    <li><a href="login.html">New Arrivals</a></li>
-                    <li><a href="login.html">Sale</a></li>
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="job-request.html">Careers</a></li>
+                    <li><a href="customer.html">My Orders</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h4>Customer Service</h4>
-                <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">FAQs</a></li>
-                    <li><a href="#">Shipping & Returns</a></li>
-                    <li><a href="#">Size Guide</a></li>
-                    <li><a href="#">Track Order</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h4>Information</h4>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li>Email: info@noratech.com</li>
+                    <li>Phone: +1 (555) 123-4567</li>
+                    <li>Address: 123 Tech Street, City, Country</li>
                 </ul>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2023 Nora_tech_Company. All Rights Reserved.</p>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Nora_tech_Company. All rights reserved.</p>
         </div>
     </footer>
-
-    <script>
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-
-                // Close mobile menu after click
-                navLinks.classList.remove('active');
-            });
-        });
-    </script>
 </body>
 </html>
