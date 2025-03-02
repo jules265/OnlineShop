@@ -289,44 +289,66 @@
             }, 3000);
         }
 
+        let auth, db;
+
         // Initialize Firebase
         document.addEventListener('DOMContentLoaded', function() {
-            if (!window.firebase) {
-                console.error("Firebase is not loaded. Please check your connection.");
-                showToast("Firebase connection error. Some features may not work properly.", "error");
-                return;
-            }
-            
             try {
-                const app = firebase.initializeApp(firebaseConfig);
-                const auth = firebase.auth();
-                const db = firebase.firestore();
-                
-                // Welcome toast
-                showToast("Welcome to your order history!", "info");
+                if (window.firebase) {
+                    firebase.initializeApp(firebaseConfig);
+                    auth = firebase.auth();
+                    db = firebase.firestore();
+                    
+                    // Check auth state
+                    auth.onAuthStateChanged(handleAuthStateChange);
+                    
+                    // Welcome toast
+                    showToast("Welcome to your order history!", "info");
+                } else {
+                    console.error("Firebase is not loaded. Using local storage only.");
+                    showToast("Operating in offline mode.", "info");
+                    loadOrdersFromLocalStorage();
+                }
             } catch (e) {
                 console.error("Firebase initialization error:", e);
                 showToast("Error initializing application.", "error");
+                loadOrdersFromLocalStorage();
             }
         });
 
-        // Check authentication state
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "login.html";
-                return;
+        // Handle auth state changes
+        function handleAuthStateChange(user) {
+            if (user) {
+                // Update profile information
+                document.getElementById("user-name").textContent = user.displayName || "User";
+                document.getElementById("user-email").textContent = user.email;
+                
+                // Try to load orders from Firestore
+                if (db) {
+                    loadOrdersFromFirestore(user.uid);
+                } else {
+                    loadOrdersFromLocalStorage();
+                }
+            } else {
+                // For demo purposes, still show orders from localStorage
+                // In production, you might redirect to login
+                // window.location.href = "login.html";
+                loadOrdersFromLocalStorage();
             }
-            
-            // Load orders from Firestore
+        }
+
+        // Load orders from Firestore
+        function loadOrdersFromFirestore(userId) {
             db.collection('orders')
-                .where('userId', '==', user.uid)
+                .where('userId', '==', userId)
                 .orderBy('orderDate', 'desc')
                 .get()
                 .then((snapshot) => {
                     const ordersContainer = document.getElementById('orders-container');
                     
                     if (snapshot.empty) {
-                        ordersContainer.innerHTML = '<p>You have no orders yet. Start shopping!</p>';
+                        // No Firestore orders, try localStorage
+                        loadOrdersFromLocalStorage();
                         return;
                     }
                     
@@ -353,23 +375,16 @@
                     });
                     
                     ordersContainer.innerHTML = ordersHTML;
+                    showToast(`Found ${snapshot.size} order(s) in your account`, "success");
                 })
                 .catch((error) => {
-                    console.error("Error getting orders: ", error);
-                    showToast("Failed to load orders. Please try again later.", "error");
+                    console.error("Error getting Firestore orders: ", error);
+                    loadOrdersFromLocalStorage();
                 });
-            }
-
-            // Update profile information
-            document.getElementById("user-name").textContent = user.displayName || "User";
-            document.getElementById("user-email").textContent = user.email;
-
-            // Load orders
-            loadOrders();
-        });
+        }
 
         // Load orders from local storage
-        function loadOrders() {
+        function loadOrdersFromLocalStorage() {
             const ordersContainer = document.getElementById("orders-container");
             const storedOrders = localStorage.getItem("orders");
             
@@ -380,6 +395,12 @@
             }
 
             const orders = JSON.parse(storedOrders);
+            
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = '<p>No orders found</p>';
+                showToast("You haven't placed any orders yet.", "info");
+                return;
+            }
             
             // Sort orders by date (newest first)
             orders.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -405,7 +426,7 @@
                         <div class="order-info">
                             <div>Status: <strong>${order.status}</strong></div>
                             <div>Items: <strong>${order.items.reduce((total, item) => total + item.quantity, 0)}</strong></div>
-                            <div>Shipping to: <strong>${order.customer?.name}</strong></div>
+                            <div>Shipping to: <strong>${order.customer?.name || 'N/A'}</strong></div>
                             <div>
                                 Payment: 
                                 <span class="order-payment">${order.paymentMethod || 'Credit Card'}</span>
@@ -415,7 +436,7 @@
                         <div class="order-items">
                             ${order.items.map(item => `
                                 <div class="order-item">
-                                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                                    <img src="${item.image || 'https://placehold.co/100x100?text=Product'}" alt="${item.name}" class="item-image">
                                     <div>
                                         <div>${item.name}</div>
                                         <div>Quantity: ${item.quantity}</div>
@@ -425,25 +446,23 @@
                             `).join('')}
                         </div>
                         <div class="order-total">
-                            <span>Subtotal: $${order.subtotal.toFixed(2)}</span> |
-                            <span>Tax: $${order.tax.toFixed(2)}</span> |
-                            <span>Shipping: $${order.shipping.toFixed(2)}</span> |
+                            <span>Subtotal: $${order.subtotal?.toFixed(2) || (order.total - (order.tax || 0) - (order.shipping || 0)).toFixed(2)}</span> |
+                            <span>Tax: $${(order.tax || 0).toFixed(2)}</span> |
+                            <span>Shipping: $${(order.shipping || 0).toFixed(2)}</span> |
                             <strong>Total: $${order.total.toFixed(2)}</strong>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            showToast(`Found ${orders.length} order${orders.length !== 1 ? 's' : ''}`, "success");
-        }
+            showToast(`Found ${orders.length} order${orders.length !== 1 ? 's' : ''} in local storage`, "success");
         }
 
         // Logout function
         function logout() {
             showToast("Logging out...", "info");
             
-            if (window.firebase) {
-                const auth = firebase.auth();
+            if (window.firebase && auth) {
                 auth.signOut().then(() => {
                     localStorage.removeItem("user");
                     
@@ -467,3 +486,45 @@
     </script>
 </body>
 </html>
+
+
+    <script>
+        // For testing purposes only - adds demo order data if none exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem("orders")) {
+                fetch('orders.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem("orders", JSON.stringify(data));
+                    })
+                    .catch(error => {
+                        console.error("Could not load sample data:", error);
+                        // If fetch fails, create a sample order manually
+                        const sampleOrder = [{
+                            id: "ORD-" + Math.floor(Math.random() * 100000),
+                            date: new Date().toISOString(),
+                            status: "Processing",
+                            items: [
+                                {
+                                    id: "p1",
+                                    name: "Sample Product",
+                                    price: 29.99,
+                                    quantity: 1,
+                                    image: "https://placehold.co/100x100?text=Product"
+                                }
+                            ],
+                            customer: {
+                                name: "Demo User",
+                                email: "user@example.com"
+                            },
+                            subtotal: 29.99,
+                            tax: 2.40,
+                            shipping: 5.00,
+                            total: 37.39,
+                            paymentMethod: "Credit Card"
+                        }];
+                        localStorage.setItem("orders", JSON.stringify(sampleOrder));
+                    });
+            }
+        });
+    </script>
