@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -435,7 +434,7 @@
             .login-card, .modal {
                 max-width: 100%;
             }
-            
+
             .login-header, .login-body, .login-footer {
                 padding-left: 20px;
                 padding-right: 20px;
@@ -449,13 +448,13 @@
         .social-login button {
             margin-top: 10px;
         }
-        
+
         .account-type-selector {
             display: flex;
             gap: 12px;
             margin-top: 8px;
         }
-        
+
         .account-type-option {
             flex: 1;
             padding: 12px;
@@ -469,26 +468,26 @@
             transition: all 0.2s ease;
             background-color: var(--bg-light);
         }
-        
+
         .account-type-option i {
             font-size: 20px;
             color: var(--text-secondary);
         }
-        
+
         .account-type-option span {
             font-size: 14px;
             font-weight: 500;
         }
-        
+
         .account-type-option.selected {
             border-color: var(--primary);
             background-color: rgba(79, 70, 229, 0.05);
         }
-        
+
         .account-type-option.selected i {
             color: var(--primary);
         }
-        
+
         .admin-login-info {
             margin-top: 16px;
             padding: 10px;
@@ -498,7 +497,7 @@
             color: var(--text-secondary);
             display: none;
         }
-        
+
         .admin-login-info.show {
             display: block;
         }
@@ -521,7 +520,7 @@
             <h2>Welcome to Nora_tech_Company</h2>
             <p>Log in to access your account</p>
         </div>
-        
+
         <div class="login-body">
             <form id="loginForm">
                 <div class="input-group">
@@ -534,7 +533,7 @@
                         <div id="emailFeedback" class="input-feedback"></div>
                     </div>
                 </div>
-                
+
                 <div class="input-group">
                     <label for="password">Password</label>
                     <div class="input-wrapper">
@@ -545,7 +544,7 @@
                         <div id="passwordFeedback" class="input-feedback"></div>
                     </div>
                 </div>
-                
+
                 <div class="input-group">
                     <label>Account Type</label>
                     <div class="account-type-selector">
@@ -560,7 +559,7 @@
                     </div>
                     <input type="hidden" id="accountType" value="client">
                 </div>
-                
+
                 <div id="adminLoginInfo" class="admin-login-info">
                     <strong>Admin Accounts:</strong>
                     <ul style="margin-top: 5px; padding-left: 15px;">
@@ -569,14 +568,14 @@
                         <li>Password: 123456@jules</li>
                     </ul>
                 </div>
-                
+
                 <button type="submit" id="loginButton">
                     <div class="btn-content">
                         <div class="loading-spinner"></div>
                         <span class="btn-text">Log In</span>
                     </div>
                 </button>
-                
+
                 <div class="social-login">
                     <button type="button" id="googleLoginButton" style="background-color: #4285F4;">
                         <div class="btn-content">
@@ -587,7 +586,7 @@
                 </div>
             </form>
         </div>
-        
+
         <div class="login-footer">
             <div class="registration-option">
                 <span class="help-text">Don't have an account?</span>
@@ -617,7 +616,7 @@
                             <div id="fullNameFeedback" class="input-feedback"></div>
                         </div>
                     </div>
-                    
+
                     <div class="input-group">
                         <label for="registerEmail">Email</label>
                         <div class="input-wrapper">
@@ -628,7 +627,7 @@
                             <div id="registerEmailFeedback" class="input-feedback"></div>
                         </div>
                     </div>
-                    
+
                     <div class="input-group">
                         <label for="registerPassword">Password</label>
                         <div class="input-wrapper">
@@ -639,7 +638,7 @@
                             <div id="registerPasswordFeedback" class="input-feedback"></div>
                         </div>
                     </div>
-                    
+
                     <div class="input-group">
                         <label for="confirmPassword">Confirm Password</label>
                         <div class="input-wrapper">
@@ -650,7 +649,7 @@
                             <div id="confirmPasswordFeedback" class="input-feedback"></div>
                         </div>
                     </div>
-                    
+
                     <button type="submit" id="registerButton">
                         <div class="btn-content">
                             <div class="loading-spinner"></div>
@@ -666,7 +665,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
+
     <!-- Ensure Firebase is loaded before our scripts -->
     <script>
         // Check if Firebase is loaded properly
@@ -677,7 +676,7 @@
             }
         });
     </script>
-    
+
     <script>
         // Firebase configuration
         const firebaseConfig = {
@@ -705,18 +704,18 @@
         const loginButton = document.getElementById('loginButton');
         const googleLoginButton = document.getElementById('googleLoginButton');
         const registerButton = document.getElementById('registerButton');
-        
+
         // Toast notification
         function showToast(type, title, message) {
             const toast = document.getElementById('toast');
             const toastIcon = document.getElementById('toastIcon');
             const toastTitle = document.getElementById('toastTitle');
             const toastMessage = document.getElementById('toastMessage');
-            
+
             // Set toast content and type
             toast.className = 'toast show ' + type;
             toastIcon.className = 'toast-icon ' + type;
-            
+
             if (type === 'success') {
                 toastIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
             } else if (type === 'error') {
@@ -724,21 +723,21 @@
             } else if (type === 'warning') {
                 toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
             }
-            
+
             toastTitle.textContent = title;
             toastMessage.textContent = message;
-            
+
             // Show toast
             setTimeout(() => {
                 toast.classList.add('show');
             }, 100);
-            
+
             // Hide toast after 4 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 4000);
         }
-        
+
         // Toggle loading state on button
         function setLoading(button, isLoading) {
             if (isLoading) {
@@ -749,20 +748,20 @@
                 button.disabled = false;
             }
         }
-        
+
         // Account type selection
         function selectAccountType(element, type) {
             // Remove selected class from all options
             document.querySelectorAll('.account-type-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            
+
             // Add selected class to clicked option
             element.classList.add('selected');
-            
+
             // Set account type value
             document.getElementById('accountType').value = type;
-            
+
             // Show admin credentials info if admin is selected
             const adminLoginInfo = document.getElementById('adminLoginInfo');
             if (type === 'admin') {
@@ -771,17 +770,17 @@
                 adminLoginInfo.classList.remove('show');
             }
         }
-        
+
         // Login functionality
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const accountType = document.getElementById('accountType').value;
             const emailFeedback = document.getElementById('emailFeedback');
             const passwordFeedback = document.getElementById('passwordFeedback');
-            
+
             // Check if trying to login as admin
             if (accountType === 'admin') {
                 // Verify admin credentials
@@ -789,11 +788,11 @@
                     { email: 'nzizajules202@gmail.com', password: '123456@jules' },
                     { email: 'imanzilutfy@gmail.com', password: '123456@jules' }
                 ];
-                
+
                 const isAdmin = adminCredentials.some(admin => 
                     admin.email === email && admin.password === password
                 );
-                
+
                 if (isAdmin) {
                     // Store admin user info
                     localStorage.setItem("user", JSON.stringify({
@@ -803,9 +802,9 @@
                         role: 'admin',
                         lastLogin: new Date().toISOString()
                     }));
-                    
+
                     showToast('success', 'Admin Login Successful', 'Welcome back, Admin!');
-                    
+
                     // Redirect to admin page
                     setTimeout(() => {
                         window.location.href = "admin.html";
@@ -819,40 +818,40 @@
                     return;
                 }
             }
-            
+
             // Clear previous feedback
             emailFeedback.textContent = '';
             emailFeedback.className = 'input-feedback';
             passwordFeedback.textContent = '';
             passwordFeedback.className = 'input-feedback';
-            
+
             // Form validation
             let isValid = true;
-            
+
             if (!email) {
                 emailFeedback.textContent = 'Email is required';
                 emailFeedback.className = 'input-feedback error';
                 document.getElementById('email').classList.add('error');
                 isValid = false;
             }
-            
+
             if (!password) {
                 passwordFeedback.textContent = 'Password is required';
                 passwordFeedback.className = 'input-feedback error';
                 document.getElementById('password').classList.add('error');
                 isValid = false;
             }
-            
+
             if (!isValid) return;
-            
+
             // Show loading state
             setLoading(loginButton, true);
-            
+
             // Attempt login
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
+
                     // Update user data in Firestore
                     db.collection('users').doc(user.uid).set({
                         email: user.email,
@@ -860,7 +859,7 @@
                         lastLogin: new Date(),
                         loginCount: firebase.firestore.FieldValue.increment(1)
                     }, { merge: true });
-                    
+
                     // Store user in localStorage
                     localStorage.setItem("user", JSON.stringify({
                         id: user.uid,
@@ -868,17 +867,17 @@
                         name: user.displayName,
                         lastLogin: new Date().toISOString()
                     }));
-                    
+
                     showToast('success', 'Success!', 'You have successfully logged in.');
-                    
+
                     // Redirect after a short delay
                     setTimeout(() => {
-                        window.location.href = "shop.html";
+                        window.location.href = "index.html";
                     }, 1000);
                 })
                 .catch((error) => {
                     setLoading(loginButton, false);
-                    
+
                     if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                         emailFeedback.textContent = 'Invalid email or password';
                         emailFeedback.className = 'input-feedback error';
@@ -888,15 +887,15 @@
                     }
                 });
         });
-        
+
         // Google login
         googleLoginButton.addEventListener('click', function() {
             setLoading(googleLoginButton, true);
-            
+
             auth.signInWithPopup(provider)
                 .then((result) => {
                     const user = result.user;
-                    
+
                     // Store user in localStorage
                     localStorage.setItem("user", JSON.stringify({
                         id: user.uid,
@@ -904,7 +903,7 @@
                         name: user.displayName,
                         lastLogin: new Date().toISOString()
                     }));
-                    
+
                     // Update or create user document in Firestore
                     db.collection('users').doc(user.uid).set({
                         uid: user.uid,
@@ -913,12 +912,12 @@
                         lastLogin: new Date(),
                         loginCount: firebase.firestore.FieldValue.increment(1)
                     }, { merge: true });
-                    
+
                     showToast('success', 'Success!', 'You have successfully logged in with Google.');
-                    
+
                     // Redirect after a short delay
                     setTimeout(() => {
-                        window.location.href = "shop.html";
+                        window.location.href = "index.html";
                     }, 1000);
                 })
                 .catch((error) => {
@@ -926,21 +925,21 @@
                     showToast('error', 'Google Login Failed', error.message);
                 });
         });
-        
+
         // Registration functionality
         registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            
+
             const fullNameFeedback = document.getElementById('fullNameFeedback');
             const emailFeedback = document.getElementById('registerEmailFeedback');
             const passwordFeedback = document.getElementById('registerPasswordFeedback');
             const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
-            
+
             // Clear previous feedback
             fullNameFeedback.textContent = '';
             fullNameFeedback.className = 'input-feedback';
@@ -950,29 +949,29 @@
             passwordFeedback.className = 'input-feedback';
             confirmPasswordFeedback.textContent = '';
             confirmPasswordFeedback.className = 'input-feedback';
-            
+
             document.getElementById('fullName').classList.remove('error');
             document.getElementById('registerEmail').classList.remove('error');
             document.getElementById('registerPassword').classList.remove('error');
             document.getElementById('confirmPassword').classList.remove('error');
-            
+
             // Form validation
             let isValid = true;
-            
+
             if (!fullName) {
                 fullNameFeedback.textContent = 'Full name is required';
                 fullNameFeedback.className = 'input-feedback error';
                 document.getElementById('fullName').classList.add('error');
                 isValid = false;
             }
-            
+
             if (!email) {
                 emailFeedback.textContent = 'Email is required';
                 emailFeedback.className = 'input-feedback error';
                 document.getElementById('registerEmail').classList.add('error');
                 isValid = false;
             }
-            
+
             if (!password) {
                 passwordFeedback.textContent = 'Password is required';
                 passwordFeedback.className = 'input-feedback error';
@@ -984,24 +983,24 @@
                 document.getElementById('registerPassword').classList.add('error');
                 isValid = false;
             }
-            
+
             if (password !== confirmPassword) {
                 confirmPasswordFeedback.textContent = 'Passwords do not match';
                 confirmPasswordFeedback.className = 'input-feedback error';
                 document.getElementById('confirmPassword').classList.add('error');
                 isValid = false;
             }
-            
+
             if (!isValid) return;
-            
+
             // Show loading state
             setLoading(registerButton, true);
-            
+
             // Create account
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
+
                     // Update profile with name
                     return user.updateProfile({
                         displayName: fullName
@@ -1027,9 +1026,9 @@
                             name: fullName,
                             lastLogin: new Date().toISOString()
                         }));
-                        
+
                         showToast('success', 'Account Created', 'Your account has been successfully created!');
-                        
+
                         // Close modal and redirect
                         setTimeout(() => {
                             registerModal.classList.remove('show');
@@ -1039,7 +1038,7 @@
                 })
                 .catch((error) => {
                     setLoading(registerButton, false);
-                    
+
                     if (error.code === 'auth/email-already-in-use') {
                         emailFeedback.textContent = 'Email is already in use';
                         emailFeedback.className = 'input-feedback error';
@@ -1049,23 +1048,23 @@
                     }
                 });
         });
-        
+
         // Modal controls
         showRegisterBtn.addEventListener('click', function() {
             registerModal.classList.add('show');
         });
-        
+
         closeRegisterModal.addEventListener('click', function() {
             registerModal.classList.remove('show');
         });
-        
+
         // Close modal when clicking outside
         window.addEventListener('click', function(event) {
             if (event.target === registerModal) {
                 registerModal.classList.remove('show');
             }
         });
-        
+
         // Input field validation reset
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
@@ -1078,7 +1077,7 @@
                 }
             });
         });
-        
+
         // Check if user is already logged in
         auth.onAuthStateChanged((user) => {
             if (user) {
