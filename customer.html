@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | StyleShop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #4a4af4;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .profile-info {
+            margin: 1rem 0;
+        }
+
+        .orders-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .orders-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-items {
+            border-top: 1px solid #eee;
+            padding-top: 0.5rem;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .order-total {
+            margin-top: 0.5rem;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>StyleShop</h1>
+        <nav class="nav-links">
+            <a href="index.html">Shop</a>
+            <a href="customer.html">Orders</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="profile-card">
+            <h2>Profile</h2>
+            <div class="profile-info">
+                <p id="user-name">Loading...</p>
+                <p id="user-email">Loading...</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </aside>
+
+        <main class="orders-section">
+            <h2>Recent Orders</h2>
+            <div id="orders-container">
+                <!-- Orders will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCS024K6CozcOvOLHMou9dKsNDh-fCw10c",
+            authDomain: "usermanagr.firebaseapp.com",
+            projectId: "usermanagr",
+            storageBucket: "usermanagr.appspot.com",
+            messagingSenderId: "201891796617",
+            appId: "1:201891796617:web:ab31f6c5b0e1becb6bd858",
+            measurementId: "G-WPNMDSTYXZ"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Update profile information
+            document.getElementById("user-name").textContent = user.displayName || "User";
+            document.getElementById("user-email").textContent = user.email;
+
+            // Load orders
+            loadOrders();
+        });
+
+        // Load orders from local storage
+        function loadOrders() {
+            const ordersContainer = document.getElementById("orders-container");
+            const storedOrders = localStorage.getItem("orders");
+            
+            if (!storedOrders) {
+                ordersContainer.innerHTML = '<p>No orders found</p>';
+                return;
+            }
+
+            const orders = JSON.parse(storedOrders);
+            ordersContainer.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <strong>${order.id}</strong>
+                        <span>${order.date}</span>
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <img src="${item.image}" alt="${item.name}" class="item-image">
+                                <div>
+                                    <div>${item.name}</div>
+                                    <div>Quantity: ${item.quantity}</div>
+                                    <div>$${item.price.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="order-total">
+                        Total: $${order.total}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                localStorage.removeItem("user");
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+            });
+        }
+    </script>
+</body>
+</html>

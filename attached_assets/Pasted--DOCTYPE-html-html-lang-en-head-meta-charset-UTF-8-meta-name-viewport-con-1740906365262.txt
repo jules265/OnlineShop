@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | StyleShop</title>
+    <link rel="stylesheet" href="customer.css">
+    <style>
+      .item-image {
+            width: 50px; /* specify size as needed */
+            height: auto;
+        }
+        .customer-details {
+            margin-top: 20px;
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            background-color: var(--gray-50);
+        }
+        .customer-details h4 {
+            margin-bottom: 10px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <span>StyleShop</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Shop</a>
+            <a href="#" class="nav-link">Orders</a>
+            <a href="#" class="nav-link">Wishlist</a>
+            <div class="avatar">JS</div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="success-banner">
+            <div class="success-icon">✓</div>
+            <div class="success-content">
+                <h2>Client Information  We Applitiate Your Perticipation on Buying Goods</h2>
+                <p>Thanks!!</p>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="customer-details">
+                <h4>Your Profile Details</h4>
+                <div class="detail-row">
+                    <strong>Name:</strong>
+                    <span id="client-name">John Smith</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Email:</strong>
+                    <span id="client-email">john.smith@example.com</span>
+                </div>
+                <!-- <div class="detail-row">
+                    <strong>Phone:</strong>
+                    <span id="client-phone">+1 (555) 123-4567</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Address:</strong>
+                    <span id="client-address">123 Main St, Apt 4B, New York, NY 10001</span>
+                </div> -->
+                <div class="actions">
+                    <button onclick="logout()" class="btn btn-outline" style="background-color: #6256ec; color: white;">Logout</button>
+                </div>
+                <div class="actions">
+                    <button onclick="logout()" class="btn btn-outline" style="background-color: #6256ec; color: white;">Pay</button>
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Your Orders</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="order-items" id="order-items">
+                            <!-- Order items will be dynamically inserted here -->
+                        </div>
+                        <div class="order-details" id="order-details">
+                            <!-- Order details will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main> 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user) {
+                window.location.href = "login.html"; // Redirect to login if user is not logged in
+            } else {
+                document.getElementById("client-name").textContent = user.id || "No name found";
+                document.getElementById("client-email").textContent = user.email || "No email found";
+                document.getElementById("client-phone").textContent = user.phone || "No phone found";
+                document.getElementById("client-address").textContent = user.address || "No address found";
+            }
+
+            // Load recent orders from local storage and display them
+            const orders = JSON.parse(localStorage.getItem("orders")) || [];
+            const orderItemsContainer = document.getElementById("order-items");
+            const orderDetailsContainer = document.getElementById("order-details");
+
+            // Loop through orders and create order summary dynamically
+            if (orders.length > 0) {
+                const latestOrder = orders[orders.length - 1]; // Get latest order for display
+                const orderItemsDetails = latestOrder.items.map(item => `
+                    <div class="order-item">
+                        <img src="${item.image}" alt="${item.name}" class="item-image">
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price}</div>
+                            <div class="item-quantity">Qty: ${item.quantity}</div>
+                        </div>
+                    </div>`).join('');
+
+                orderItemsContainer.innerHTML = orderItemsDetails;
+
+                const subtotal = latestOrder.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+                const tax = subtotal * 0.08;
+                const total = subtotal + tax;
+
+                orderDetailsContainer.innerHTML = `
+                    <div class="order-detail-row">
+                        <div class="detail-label">Subtotal</div>
+                        <div class="detail-value">$${subtotal.toFixed(2)}</div>
+                    </div>
+                    <div class="order-detail-row">
+                        <div class="detail-label">Tax</div>
+                        <div class="detail-value">$${tax.toFixed(2)}</div>
+                    </div>
+                    <div class="total-row">
+                        <div>Total</div>
+                        <div>$${total.toFixed(2)}</div>
+                    </div>
+                `;
+            } else {
+                orderItemsContainer.innerHTML = '<p>No orders found.</p>';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem("user"); // Logout the user
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    </script>
+</body>
+</html>
