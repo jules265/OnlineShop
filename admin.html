@@ -877,6 +877,8 @@
                     <td>
                         <button class="action-btn" onclick="viewOrder('${order.id}')">View</button>
                         <button class="action-btn" onclick="updateOrderStatus('${order.id}')">Update</button>
+                        <button class="action-btn" style="background-color: #4caf50; color: white;" onclick="markOrderDelivered('${order.id}')">Delivered</button>
+                        <button class="action-btn" style="background-color: #f44336; color: white;" onclick="removeOrder('${order.id}')">Remove</button>
                     </td>
                 </tr>
             `).join('');
@@ -927,6 +929,106 @@
                 `;
                 
                 alert(orderDetails);
+            }
+        }
+        
+        // Mark order as delivered
+        function markOrderDelivered(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                
+                // Ask for confirmation and a message for the customer
+                const confirmDelivery = confirm(`Mark order ${order.id} as delivered?`);
+                if (!confirmDelivery) return;
+                
+                const deliveryMessage = prompt(
+                    `Enter a message to notify ${order.customer?.name || 'the customer'} about their delivery:`, 
+                    `Your order ${order.id} has been delivered. Thank you for shopping with Nora_tech_Company!`
+                );
+                
+                if (deliveryMessage !== null) {
+                    // Update order status
+                    orders[orderIndex].status = 'Delivered';
+                    orders[orderIndex].deliveryDate = new Date().toISOString();
+                    orders[orderIndex].deliveryMessage = deliveryMessage;
+                    
+                    // Save notification for the customer
+                    if (order.customer && order.customer.email) {
+                        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                        notifications.push({
+                            id: 'notif-' + Date.now(),
+                            userId: order.customer.email,
+                            type: 'order_delivered',
+                            title: 'Your Order Has Been Delivered!',
+                            message: deliveryMessage,
+                            orderId: order.id,
+                            date: new Date().toISOString(),
+                            read: false
+                        });
+                        
+                        localStorage.setItem('notifications', JSON.stringify(notifications));
+                    }
+                    
+                    // Save updated orders
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    
+                    // Refresh the orders display
+                    loadOrders();
+                    loadDashboardData();
+                    
+                    alert(`Order ${order.id} marked as delivered and customer has been notified.`);
+                }
+            }
+        }
+        
+        // Remove order
+        function removeOrder(orderId) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            
+            if (orderIndex !== -1) {
+                const order = orders[orderIndex];
+                
+                // Ask for confirmation and a message for the customer
+                const confirmRemoval = confirm(`Are you sure you want to remove order ${order.id}?`);
+                if (!confirmRemoval) return;
+                
+                const removalMessage = prompt(
+                    `Enter a message to notify ${order.customer?.name || 'the customer'} about their order removal:`, 
+                    `Your order ${order.id} has been canceled. Please contact customer support if you have any questions.`
+                );
+                
+                if (removalMessage !== null) {
+                    // Save notification for the customer before removing the order
+                    if (order.customer && order.customer.email) {
+                        const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                        notifications.push({
+                            id: 'notif-' + Date.now(),
+                            userId: order.customer.email,
+                            type: 'order_removed',
+                            title: 'Your Order Has Been Canceled',
+                            message: removalMessage,
+                            orderId: order.id,
+                            date: new Date().toISOString(),
+                            read: false
+                        });
+                        
+                        localStorage.setItem('notifications', JSON.stringify(notifications));
+                    }
+                    
+                    // Remove the order
+                    orders.splice(orderIndex, 1);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+                    
+                    // Refresh the orders display
+                    loadOrders();
+                    loadDashboardData();
+                    
+                    alert(`Order ${order.id} has been removed and customer has been notified.`);
+                }
             }
         }
 
