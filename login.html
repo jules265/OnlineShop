@@ -79,6 +79,42 @@
         </div>
     </div>
 
+    <!-- Signup Modal -->
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background-color: white; width: 90%; max-width: 500px; margin: 10% auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <h2>Create Account</h2>
+            
+            <div class="form-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="signupEmail">Email</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email">
+                <div id="signupEmailFeedback" class="feedback"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" placeholder="Create a password">
+                <div id="signupPasswordFeedback" class="feedback"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm your password">
+                <div id="confirmPasswordFeedback" class="feedback"></div>
+            </div>
+            
+            <button id="createAccountBtn" class="btn">Create Account</button>
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="#" onclick="hideCreateAccountModal()">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js"></script>
@@ -184,9 +220,100 @@
         // Check if user is already logged in
         auth.onAuthStateChanged((user) => {
             if (user) {
-                window.location.href = "customer.html";
+                window.location.href = "shop.html";
             }
         });
+
+        // Show signup modal
+        function showCreateAccountModal() {
+            document.getElementById('signupModal').style.display = 'block';
+        }
+
+        // Hide signup modal
+        function hideCreateAccountModal() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        // Create a new account
+        function createAccount() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const confirmPassword = document.getElementById('signupConfirmPassword').value.trim();
+            
+            const signupEmailFeedback = document.getElementById('signupEmailFeedback');
+            const signupPasswordFeedback = document.getElementById('signupPasswordFeedback');
+            const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
+            
+            // Clear previous feedback
+            signupEmailFeedback.textContent = '';
+            signupPasswordFeedback.textContent = '';
+            confirmPasswordFeedback.textContent = '';
+            
+            // Validate inputs
+            if (!name) {
+                signupEmailFeedback.textContent = 'Please enter your name';
+                return;
+            }
+            
+            if (!email) {
+                signupEmailFeedback.textContent = 'Email is required';
+                return;
+            }
+            
+            if (!password) {
+                signupPasswordFeedback.textContent = 'Password is required';
+                return;
+            }
+            
+            if (password.length < 6) {
+                signupPasswordFeedback.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                confirmPasswordFeedback.textContent = 'Passwords do not match';
+                return;
+            }
+            
+            // Create user with email and password
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update profile with name
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    const user = auth.currentUser;
+                    if (user) {
+                        // Store user data in localStorage
+                        localStorage.setItem('user', JSON.stringify({
+                            id: user.uid,
+                            email: user.email,
+                            name: name,
+                            lastLogin: new Date().toISOString()
+                        }));
+                        // Redirect to shop page
+                        window.location.href = 'shop.html';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error creating account:', error);
+                    signupEmailFeedback.textContent = error.message;
+                });
+        }
+
+        // Add event listener for create account button
+        document.getElementById('createAccountBtn').addEventListener('click', createAccount);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('signupModal');
+            if (event.target === modal) {
+                hideCreateAccountModal();
+            }
+        };
     </script>
 </body>
 </html>
