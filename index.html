@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StyleShop - Fashion & Accessories</title>
+    <title>Nora_tech_Company - Technology Solutions</title>
     <style>
         :root {
             --primary: #4a4af4;
@@ -439,7 +438,7 @@
 </head>
 <body>
     <header class="header">
-        <h1>StyleShop</h1>
+        <h1>Nora_tech_Company</h1>
         <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
         <nav class="nav-links" id="navLinks">
             <a href="#featured">Categories</a>
@@ -584,8 +583,8 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-column">
-                <h4>StyleShop</h4>
-                <p>Your one-stop destination for fashion, footwear, and accessories. We bring you quality products at affordable prices.</p>
+                <h4>Nora_tech_Company</h4>
+                <p>Your leading technology solutions provider. We bring you innovative products and services at competitive prices.</p>
                 <div class="social-links">
                     <a href="#">FB</a>
                     <a href="#">IG</a>
@@ -625,7 +624,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2023 StyleShop. All Rights Reserved.</p>
+            <p>&copy; 2023 Nora_tech_Company. All Rights Reserved.</p>
         </div>
     </footer>
 
@@ -633,20 +632,20 @@
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
-        
+
         mobileMenuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
-        
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                
+
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
                     behavior: 'smooth'
                 });
-                
+
                 // Close mobile menu after click
                 navLinks.classList.remove('active');
             });

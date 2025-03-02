@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | StyleShop</title>
+    <title>Login | Nora_tech_Company</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -465,7 +465,7 @@
 
     <div class="login-card">
         <div class="login-header">
-            <h2>Welcome to StyleShop</h2>
+            <h2>Welcome to Nora_tech_Company</h2>
             <p>Log in to access your account</p>
         </div>
         
@@ -589,6 +589,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Ensure Firebase is loaded before our scripts -->
+    <script>
+        // Check if Firebase is loaded properly
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase SDK failed to load. Please check your internet connection.');
+                alert('Error loading necessary resources. Please refresh the page or try again later.');
+            }
+        });
+    </script>
     
     <script>
         // Firebase configuration

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard | StyleShop</title>
+    <title>Customer Dashboard | Nora_tech_Company</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -228,7 +228,7 @@
     </div>
     
     <header class="header">
-        <h1>StyleShop</h1>
+        <h1>Nora_tech_Company</h1>
         <nav class="nav-links">
             <a href="shop.html">Shop</a>
             <a href="customer.html">Orders</a>
@@ -254,9 +254,23 @@
     </div>
 
     <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Ensure Firebase is loaded before our scripts -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase SDK failed to load. Please check your internet connection.');
+                document.getElementById('toast-container').innerHTML = `
+                    <div class="toast error">
+                        <div class="toast-content">Error loading necessary resources. Please refresh.</div>
+                    </div>
+                `;
+            }
+        });
+    </script>
 
     <script>
         // Firebase configuration
